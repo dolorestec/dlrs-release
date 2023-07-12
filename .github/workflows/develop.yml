@@ -28,7 +28,28 @@ jobs:
           #uses: dolorestec/devops/.github/workflows/validate.yml@v1
           
         - name: Upload variables
-          uses: actions/upload-artifact@v2
+          uses: actions/upload-artifact@v3
           with:
             name: variables.txt
             path: variables.txt
+
+    build:
+      name: Build
+      needs: [variables]
+      runs-on: ubuntu-latest
+      steps:
+        - name: Download variables
+          uses: actions/download-artifact@v2
+          with:
+            name: variables.txt
+        
+        - name: Set variables
+          shell: bash
+          run: |
+            export $(cat variables.txt | xargs)
+        
+        - name: Build
+          run: |
+            env
+            
+

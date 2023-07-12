@@ -28,7 +28,9 @@ jobs:
 
         - name: Export variables to file
           run: |
-            echo "export $PREFIX-$(cat pyproject.toml | grep name | awk -F'=' '{print $0}' | sed 's/ \|"\|//g')" >> variables.txt
-            echo "export $PREFIX-$(cat pyproject.toml | grep version | awk -F'=' '{print $0}' | sed 's/ \|"\|//g')" >> variables.txt
-            echo "export $PREFIX-LAST_VERSION=$(git tag --sort creatordate -l "v*-RELEASE*" "v*-RC*" --merged | tail -n 1)" >> variables.txt
-            
+            echo "export $PREFIX-$(cat pyproject.toml | grep name | awk -F'=' '{print $0}' | sed 's/ \|"\|//g')" >> "$GITHUB_ENV"
+            echo "export $PREFIX-$(cat pyproject.toml | grep version | awk -F'=' '{print $0}' | sed 's/ \|"\|//g')" >> "$GITHUB_ENV"
+            echo "export $PREFIX-last-version=$(git tag --sort creatordate -l "v*-RELEASE*" "v*-RC*" --merged | tail -n 1)" >> "$GITHUB_ENV"
+
+        - name: Environment variables
+          run: env

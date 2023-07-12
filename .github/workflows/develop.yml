@@ -40,7 +40,11 @@ jobs:
               DLRS_LAST_VERSION: "$(git tag --sort creatordate -l 'v*-RELEASE*' 'v*-RC*' --merged | tail -n 1)"
               DLRS_LAST_RELEASE: git tag --sort creatordate -l 'v*-RELEASE*' --merged | tail -n 1)
           run: |
-            echo
+            echo "$DLRS_NAME"
+            echo "${DLRS_VERSION}"
+            echo "$DLRS_LAST_VERSION"
+            echo "$DLRS_LAST_RELEASE"
+
 
         - name: Create Variables file
           #uses: dolorestec/devops/.github/workflows/validate.yml@v1

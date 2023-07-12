@@ -5,6 +5,6 @@ on:
     workflow_dispatch: 
 
 jobs:
-    validate:
-        name: Validate
-        uses: dolorestec/devops/.github/workflows/validate.yml@v1
+  check:
+    name: Check 
+    uses: dolorestec/devops/.github/workflows/validate.yml@v1

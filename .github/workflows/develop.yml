@@ -34,16 +34,11 @@ jobs:
 
 
         - name: Environment variables
-          env:
-              DLRS_NAME: $(pwd | awk -F'/' '{print $NF}')
-              DLRS_VERSION: $(cat pyproject.toml | grep version | awk -F'=' '{print $0}' | sed 's/ \|"\|//g')
-              DLRS_LAST_VERSION: "$(git tag --sort creatordate -l 'v*-RELEASE*' 'v*-RC*' --merged | tail -n 1)"
-              DLRS_LAST_RELEASE: git tag --sort creatordate -l 'v*-RELEASE*' --merged | tail -n 1)
           run: |
-            echo "$DLRS_NAME"
-            echo "${DLRS_VERSION}"
-            echo "$DLRS_LAST_VERSION"
-            echo "$DLRS_LAST_RELEASE"
+            echo "DLRS_NAME=$(pwd | awk -F'/' '{print $NF}')"
+            echo "DLRS_VERSION=$(cat pyproject.toml | grep version | awk -F'=' '{print $0}' | sed 's/ \|"\|//g')"
+            echo "DLRS_LAST_VERSION=$(git tag --sort creatordate -l 'v*-RELEASE*' 'v*-RC*' --merged | tail -n 1)"
+            echo "DLRS_LAST_RELEASE=git tag --sort creatordate -l 'v*-RELEASE*' --merged | tail -n 1)"
 
 
         - name: Create Variables file

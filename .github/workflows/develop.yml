@@ -5,8 +5,8 @@ on:
     workflow_dispatch: 
 
 jobs:
-    variables:
-        name: Export variables
+    validate:
+        name: Validate
         timeout-minutes: 10
         runs-on: ubuntu-latest
 
@@ -18,40 +18,4 @@ jobs:
             ref: ${{ github.ref_name }}
             fetch-depth: 0
 
-        - name: Create variables
-          run: |
-            echo "Exporting variables to Variables file"
-            touch variables.txt
-            echo -e "DLRS_NAME=$(pwd | awk -F'/' '{print $NF}')" >> variables.txt
-            echo "DLRS_VERSION=$(cat pyproject.toml | grep version | awk -F'=' '{print $2}' | sed 's/ \|"\|//g')" >> variables.txt
-            echo "DLRS_LAST_VERSION=$(git tag --sort creatordate -l 'v*-RELEASE*' 'v*-RC*' --merged | tail -n 1)" >> variables.txt
-          #uses: dolorestec/devops/.github/workflows/validate.yml@v1
-          
-        - name: Upload variables
-          uses: actions/upload-artifact@v3
-          with:
-            name: variables.txt
-            path: variables.txt
-
-    build:
-      name: Build
-      needs: [variables]
-      runs-on: ubuntu-latest
-      steps:
-        - name: Download variables
-          uses: actions/download-artifact@v2
-          with:
-            name: variables.txt
-
-        - name: Set variables
-          shell: bash
-          run: |
-            cat variables.txt | xargs -I {} echo "{}" >> $GITHUB_ENV
-        
-        - name: Docker image build
-          shell: bash
-          run: |
-            echo "Building docker image ${{ env.DLRS_NAME }}:${{ env.DLRS_VERSION }}" 
-            docker build -t ${{ env.DLRS_NAME }}:${{ env.DLRS_VERSION }} .
-
-
+        - uses: dolorestec/devops/.github/workflows/validate.yml@v1

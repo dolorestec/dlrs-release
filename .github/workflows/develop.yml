@@ -18,7 +18,7 @@ jobs:
             fetch-depth: 0
 
         - name: Environment variables
-          run: env | grep DLRS
+          run: env
 
         - name: Create Variables file
           #uses: dolorestec/devops/.github/workflows/validate.yml@v1
@@ -32,6 +32,11 @@ jobs:
               DLRS_LAST_RELEASE: git tag --sort creatordate -l 'v*-RELEASE*' --merged | tail -n 1)
           run: |
             env | grep DLRS >> variables.txt
+            echo $DLRS_NAME
+            echo $DLRS_VERSION
+            echo $DLRS_LAST_VERSION
+            echo $DLRS_LAST_RELEASE
+            
 
         - name: Create Variables file
           run: cat variables.txt

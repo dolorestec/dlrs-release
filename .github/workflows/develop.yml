@@ -16,9 +16,31 @@ jobs:
             repository: ${{ github.repository }}
             ref: ${{ github.ref_name }}
             fetch-depth: 0
+        - name: testes step
+          run: |
+            echo "::notice file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
+            echo "::warning file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
+            echo "::error file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
+
+        - name: Group of log lines
+          run: |
+                echo "::group::My title"
+                echo "Inside group"
+                echo "Inside group"
+                echo "Inside group"
+                echo "Inside group"
+                echo "Inside group"
+                echo "::endgroup::"
+
 
         - name: Environment variables
-          run: env
+          env:
+              DLRS_NAME: $(pwd | awk -F'/' '{print $NF}')
+              DLRS_VERSION: $(cat pyproject.toml | grep version | awk -F'=' '{print $0}' | sed 's/ \|"\|//g')
+              DLRS_LAST_VERSION: "$(git tag --sort creatordate -l 'v*-RELEASE*' 'v*-RC*' --merged | tail -n 1)"
+              DLRS_LAST_RELEASE: git tag --sort creatordate -l 'v*-RELEASE*' --merged | tail -n 1)
+          run: |
+            echo
 
         - name: Create Variables file
           #uses: dolorestec/devops/.github/workflows/validate.yml@v1

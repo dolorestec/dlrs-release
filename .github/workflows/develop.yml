@@ -42,19 +42,15 @@ jobs:
           uses: actions/download-artifact@v2
           with:
             name: variables.txt
-        - name: Set variables
-          shell: bash
-          run: |
-              cat variables.txt
-              cat variables.txt | xargs -I {} echo "export {}"
-
+            
         - name: Set variables
           shell: bash
           run: |
             cat variables.txt | xargs -I {} echo "{}" >> $GITHUB_ENV
         
-        - name: Build
+        - name: Docker image build
+          shell: bash
           run: |
-            env
+            echo "Building docker image ${{ env.DLRS_NAME }}:${{ env.DLRS_VERSION }}"
 
 

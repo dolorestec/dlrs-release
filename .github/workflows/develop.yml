@@ -11,7 +11,7 @@ jobs:
         env:
           DLRS_NAME: $(cat pyproject.toml | grep name | awk -F'=' '{print $0}' | sed 's/ \|"\|//g')
           DLRS_VERSION: $(cat pyproject.toml | grep version | awk -F'=' '{print $0}' | sed 's/ \|"\|//g')
-          DLRS_LAST_VERSION: $(git tag --sort creatordate -l "v*-RELEASE*" "v*-RC*" --merged | tail -n 1)
+          DLRS_LAST_VERSION: "$(git tag --sort creatordate -l 'v*-RELEASE*' 'v*-RC*' --merged | tail -n 1)"
 
         steps:
         - name: Checkout code

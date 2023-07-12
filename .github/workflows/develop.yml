@@ -10,7 +10,7 @@ jobs:
         runs-on: ubuntu-latest
         env:
           PREFIX: "dlrs"
-          FIELDS: ("name","version")
+          FIELDS: (name,version)
 
         steps:
         - name: Checkout code

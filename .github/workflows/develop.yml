@@ -33,25 +33,19 @@ jobs:
             name: variables.txt
             path: variables.txt
 
+        - name: Set variables
+          shell: bash
+          run: |
+              cat variables.txt | xargs -I {} echo "{}" >> $GITHUB_ENV
+
     build:
       name: Build
       needs: [variables]
       runs-on: ubuntu-latest
       steps:
-        - name: Download variables
-          uses: actions/download-artifact@v2
-          with:
-            name: variables.txt
-
-        - name: Set variables
-          shell: bash
-          run: |
-            cat variables.txt | xargs -I {} echo "{}" >> $GITHUB_ENV
-        
         - name: Docker image build
           shell: bash
           run: |
             echo "Building docker image ${{ env.DLRS_NAME }}:${{ env.DLRS_VERSION }}" 
-            docker build -t ${{ env.DLRS_NAME }}:${{ env.DLRS_VERSION }} .
 
 

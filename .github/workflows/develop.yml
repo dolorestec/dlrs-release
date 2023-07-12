@@ -51,7 +51,7 @@ jobs:
         - name: Set variables
           shell: bash
           run: |
-            cat variables.txt | xargs -I {} echo "export {}" >> $GITHUB_ENV
+            cat variables.txt | xargs -I {} echo "{}" >> $GITHUB_ENV
         
         - name: Build
           run: |

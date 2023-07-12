@@ -16,24 +16,30 @@ jobs:
             repository: ${{ github.repository }}
             ref: ${{ github.ref_name }}
             fetch-depth: 0
-
         - name: testes step
           run: |
             echo "::notice file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
             echo "::warning file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
             echo "::error file=app.js,line=1,col=5,endColumn=7::Missing semicolon"
 
+        - name: Group of log lines
+          run: |
+                echo "::group::My title"
+                echo "Inside group"
+                echo "Inside group"
+                echo "Inside group"
+                echo "Inside group"
+                echo "Inside group"
+                echo "::endgroup::"
+
 
         - name: Environment variables
           run: |
             echo "::group::Export Variables"
-            echo "DLRS_NAME=$(pwd | awk -F'/' '{print $NF}')" >> $GITHUB_ENV
+            echo -e "DLRS_NAME=$(pwd | awk -F'/' '{print $NF}')" >> $GITHUB_ENV
             echo "DLRS_VERSION=$(cat pyproject.toml | grep version | awk -F'=' '{print $2}' | sed 's/ \|"\|//g')" >> $GITHUB_ENV
             echo "DLRS_LAST_VERSION=$(git tag --sort creatordate -l 'v*-RELEASE*' 'v*-RC*' --merged | tail -n 1)" >> $GITHUB_ENV
             echo "::endgroup::"
-
-        - name: Create Variables file
-          run: env | grep DLRS
 
 
         - name: Create Variables file

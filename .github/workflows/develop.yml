@@ -9,7 +9,9 @@ jobs:
         timeout-minutes: 10
         runs-on: ubuntu-latest
         env:
-          PREFIX: "dlrs"
+          DLRS_NAME: $(cat pyproject.toml | grep name | awk -F'=' '{print $0}' | sed 's/ \|"\|//g')
+          DLRS_VERSION: $(cat pyproject.toml | grep version | awk -F'=' '{print $0}' | sed 's/ \|"\|//g')
+          DLRS_LAST_VERSION: $(git tag --sort creatordate -l "v*-RELEASE*" "v*-RC*" --merged | tail -n 1)
 
         steps:
         - name: Checkout code
@@ -20,17 +22,11 @@ jobs:
             fetch-depth: 0
 
         - name: Environment variables
-          run: env
+          run: env | grep DLRS
 
         - name: Create Variables file
           #uses: dolorestec/devops/.github/workflows/validate.yml@v1
-          run: touch variables.txt
-
-        - name: Export variables to file
-          run: |
-            echo "export $PREFIX-$(cat pyproject.toml | grep name | awk -F'=' '{print $0}' | sed 's/ \|"\|//g')" >> "$GITHUB_ENV"
-            echo "export $PREFIX-$(cat pyproject.toml | grep version | awk -F'=' '{print $0}' | sed 's/ \|"\|//g')" >> "$GITHUB_ENV"
-            echo "export $PREFIX-last-version=$(git tag --sort creatordate -l "v*-RELEASE*" "v*-RC*" --merged | tail -n 1)" >> "$GITHUB_ENV"
+          run: touch variables.txt < env | grep DLRS
 
         - name: Environment variables
-          run: env
+          run: cat variables.txt

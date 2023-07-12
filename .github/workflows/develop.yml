@@ -42,14 +42,19 @@ jobs:
           uses: actions/download-artifact@v2
           with:
             name: variables.txt
-        
         - name: Set variables
           shell: bash
           run: |
-            export $(cat variables.txt | xargs)
+              cat variables.txt
+              cat variables.txt | xargs -I {} echo "export {}"
+
+        - name: Set variables
+          shell: bash
+          run: |
+            cat variables.txt | xargs -I {} echo "export {}" >> $GITHUB_ENV
         
         - name: Build
           run: |
             env
-            
+
 

@@ -1,0 +1,6 @@
+[tool.poetry]
+name = "dlrs-release"
+version = "v1.0.0-SNAPSHOT"
+description = "Image docker para deploy de aplicações"
+authors = ["Lucas Cantarelli <lucascantarellijpa@gmail.com>"]
+readme = "README.md"

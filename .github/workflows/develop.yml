@@ -26,7 +26,11 @@ jobs:
 
         - name: Create Variables file
           #uses: dolorestec/devops/.github/workflows/validate.yml@v1
-          run: touch variables.txt < env | grep DLRS
+          run: touch variables.txt
 
         - name: Environment variables
+          run: |
+            env | grep DLRS >> variables.txt
+
+        - name: Create Variables file
           run: cat variables.txt

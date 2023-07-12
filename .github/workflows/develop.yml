@@ -8,6 +8,9 @@ jobs:
         name: Variables
         timeout-minutes: 10
         runs-on: ubuntu-latest
+        env:
+          PREFIX: "dlrs"
+          FIELDS: ("name","version")
 
         steps:
         - name: Checkout code
@@ -19,5 +22,12 @@ jobs:
 
         - name: Create Variables file
           #uses: dolorestec/devops/.github/workflows/validate.yml@v1
+          run: touch variables.txt
+
+        - name: Export variables
           run: |
-              echo "Criando arquivo de variaveis" >> "$GITHUB_OUTPUT"
+            for i in $FIELDS; do
+              print $( echo $i | grep $i | awk -F, '{print $1}')
+              echo $i | grep -e $i | awk '{print $1}'
+            done
+            

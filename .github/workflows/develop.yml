@@ -9,3 +9,8 @@ jobs:
     name: Check 
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/validate.yml@v1
+
+  publish:
+    name: Publish
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/publish.yml@v1

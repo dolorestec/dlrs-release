@@ -1,4 +1,3 @@
-[tool.poetry]
 name = "dlrs-release"
 version = "v0.0.0-RELEASE"
 description = "Image docker para deploy de aplicações"

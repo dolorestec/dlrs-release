@@ -14,7 +14,8 @@ WORKDIR /app
 EXPOSE 5000
 
 # Create virtualenv
-RUN python -m venv $POETRY_VIRTUALENV_PATH \
+RUN apt-get update && apt-get install -y --no-install-recommends build-essential \
+	&& python -m venv $POETRY_VIRTUALENV_PATH \
 	&& echo 'source $POETRY_VIRTUALENV_PATH/bin/activate' >> ~/.bashrc \
 	&& $POETRY_VIRTUALENV_PATH/bin/pip install --upgrade pip poetry
 
@@ -36,7 +37,7 @@ Python Version: $(python --version)\n\
 " > /etc/motd && echo '[ ! -z "$TERM" -a -r /etc/motd ] && cat /etc/motd' >> /etc/bash.bashrc;
 
 COPY ./pyproject.toml ./poetry.lock* /app/
-RUN poetry install --no-dev
+RUN poetry install
 
 USER daemon
 CMD ["/bin/bash"]

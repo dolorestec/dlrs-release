@@ -36,8 +36,5 @@ Python Version: $(python --version)\n\
 ===================================================================\n\
 " > /etc/motd && echo '[ ! -z "$TERM" -a -r /etc/motd ] && cat /etc/motd' >> /etc/bash.bashrc;
 
-COPY ./pyproject.toml ./poetry.lock* /app/
-RUN poetry install
-
 USER daemon
 CMD ["/bin/bash"]

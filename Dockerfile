@@ -21,6 +21,8 @@ RUN python -m venv $POETRY_VIRTUALENV_PATH \
 # Register Poetry in PATH
 ENV PATH="${POETRY_VIRTUALENV_PATH}/bin:${PATH}"
 
+COPY ./pyproject.toml ./poetry.lock* /app/
+
 # MOTD - Message of the day
 RUN echo "\
 ===================================================================\n\
@@ -32,6 +34,9 @@ Poetry Version: $(poetry --version)\n\
 Python Version: $(python --version)\n\
 ===================================================================\n\
 " > /etc/motd && echo '[ ! -z "$TERM" -a -r /etc/motd ] && cat /etc/motd' >> /etc/bash.bashrc;
+
+COPY ./pyproject.toml ./poetry.lock* /app/
+RUN poetry install --no-dev
 
 USER daemon
 CMD ["/bin/bash"]

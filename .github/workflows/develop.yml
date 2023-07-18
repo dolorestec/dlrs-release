@@ -7,13 +7,19 @@ on:
     branches: [develop]
 
 jobs:
-  check:
-    name: Check 
+  environment:
+    name: Environment 
     secrets: inherit
-    uses: dolorestec/devops/.github/workflows/validate.yml@develop
+    uses: dolorestec/devops/.github/workflows/prepare-environment.yml@develop
 
-  publish:
-    name: Publish
-    needs: check
+  validade:
+    name: Validate
+    needs: environment
     secrets: inherit
-    uses: dolorestec/devops/.github/workflows/publish.yml@develop
+    uses: dolorestec/devops/.github/workflows/docker-validate.yml@develop
+
+  release:
+    name: Release
+    needs: validade
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/release-branch.yml@develop

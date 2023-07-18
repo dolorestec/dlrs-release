@@ -16,10 +16,10 @@ jobs:
     name: Validate
     needs: environment
     secrets: inherit
-    uses: dolorestec/devops/.github/workflows/docker-validate.yml@develop
+    uses: dolorestec/devops/.github/workflows/docker-test.yml@develop
 
   deploy:
     name: Deploy
     needs: validade
     secrets: inherit
-    uses: dolorestec/devops/.github/workflows/docker-test.yml@develop
+    uses: dolorestec/devops/.github/workflows/docker-deploy.yml@develop

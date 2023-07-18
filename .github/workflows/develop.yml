@@ -19,7 +19,7 @@ jobs:
     uses: dolorestec/devops/.github/workflows/docker-validate.yml@develop
 
   deploy:
-    name: Deploy
+    name: Deploytest
     needs: validade
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/docker-deploy.yml@develop

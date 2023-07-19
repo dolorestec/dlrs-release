@@ -10,6 +10,23 @@ on:
 jobs:
   release:
     name: Release Branch
+    needs: deploy
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/release-branch.yml@develop
     
+  environment:
+    name: Setup Environment
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/prepare-environment.yml@develop
+
+  build:
+    name: Docker Build
+    needs: environment
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/docker-build.yml@develop
+
+  deploy:
+    name: Docker Deploy
+    needs: build
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/docker-deploy.yml@develop

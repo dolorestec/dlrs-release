@@ -1,5 +1,5 @@
-name: Develop
-run-name: Push Develop
+name: Test
+run-name: Test
 
 on:
   workflow_call:

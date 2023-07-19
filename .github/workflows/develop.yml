@@ -8,25 +8,25 @@ on:
     branches: [develop]
 
 jobs:
+  release:
+    name: Release Branch
+    needs: deploy
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/release-branch.yml@develop
+    
   environment:
-    name: Environment 
+    name: Setup Environment
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/prepare-environment.yml@develop
 
   build:
-    name: Build
+    name: Docker Build
     needs: environment
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/docker-build.yml@develop
 
   deploy:
-    name: Deploy
+    name: Docker Deploy
     needs: build
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/docker-deploy.yml@develop
-
-  release:
-    name: Release
-    needs: deploy
-    secrets: inherit
-    uses: dolorestec/devops/.github/workflows/release-branch.yml@develop

@@ -5,13 +5,7 @@ on:
   workflow_call:
   workflow_dispatch:
 
-jobs:
-  release:
-    name: Release Branch
-    needs: deploy
-    secrets: inherit
-    uses: dolorestec/devops/.github/workflows/release-branch.yml@develop
-    
+jobs:  
   environment:
     name: Setup Environment
     secrets: inherit
@@ -28,3 +22,9 @@ jobs:
     needs: build
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/docker-deploy.yml@develop
+  
+  branch:
+    name: Create Branch
+    needs: deploy
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/release-branch.yml@develop

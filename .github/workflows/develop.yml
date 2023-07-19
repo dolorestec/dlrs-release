@@ -1,4 +1,5 @@
 name: Develop
+run-name: Push Develop
 
 on:
   workflow_call:
@@ -12,15 +13,15 @@ jobs:
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/prepare-environment.yml@develop
 
-  validade:
-    name: Validate
+  build:
+    name: Build
     needs: environment
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/docker-build.yml@develop
 
   deploy:
     name: Deploy
-    needs: validade
+    needs: build
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/docker-deploy.yml@develop
 

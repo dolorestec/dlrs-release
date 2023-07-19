@@ -23,3 +23,9 @@ jobs:
     needs: validade
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/docker-deploy.yml@develop
+
+  release:
+    name: Release
+    needs: deploy
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/release-branch.yml@develop

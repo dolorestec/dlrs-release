@@ -7,18 +7,18 @@ on:
 
 jobs:  
   setup:
-    name: Environment
+    name: Setup environment
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/setup-environment.yml@develop
 
   publish:
-    name: Docker
+    name: Docker publish
     needs: setup
     secrets: inherit
-    uses: dolorestec/devops/.github/workflows/docker-build-push.yml@develop
+    uses: dolorestec/devops/.github/workflows/docker-publish.yml@develop
   
   release:
-    name: Create
+    name: Release gitflow
     needs: publish
     secrets: inherit
-    uses: dolorestec/devops/.github/workflows/release-branch.yml@develop
+    uses: dolorestec/devops/.github/workflows/release-gitflow.yml@develop

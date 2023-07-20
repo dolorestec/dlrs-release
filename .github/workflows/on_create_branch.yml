@@ -1,0 +1,19 @@
+name: First branch run
+run-name: Publish snapshot
+
+on:
+  push:
+    branches:
+      - 'releases/**'
+      - 'hotfix/**'
+jobs:  
+  setup:
+    name: Setup environment
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/setup-environment.yml@develop
+
+  publish:
+    name: Docker publish
+    needs: setup
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/docker-publish.yml@develop

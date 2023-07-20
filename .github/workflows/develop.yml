@@ -6,25 +6,19 @@ on:
   workflow_dispatch:
 
 jobs:  
-  environment:
+  setup:
     name: Setup Environment
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/prepare-environment.yml@develop
 
-  build:
-    name: Docker Build
-    needs: environment
+  publish:
+    name: Docker Build and Push
+    needs: setup
     secrets: inherit
-    uses: dolorestec/devops/.github/workflows/docker-build.yml@develop
-
-  deploy:
-    name: Docker Deploy
-    needs: build
-    secrets: inherit
-    uses: dolorestec/devops/.github/workflows/docker-deploy.yml@develop
+    uses: dolorestec/devops/.github/workflows/docker-build-push.yml@develop
   
-  branch:
+  release:
     name: Create Branch
-    needs: deploy
+    needs: publish
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/release-branch.yml@develop

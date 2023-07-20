@@ -1,4 +1,4 @@
-name: First branch run
+name: First Run Branch [releases/**, hotfix/**]
 run-name: Publish snapshot
 
 on:

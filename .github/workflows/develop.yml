@@ -9,16 +9,5 @@ jobs:
   setup:
     name: Setup Environment
     secrets: inherit
-    uses: dolorestec/devops/.github/workflows/prepare-environment.yml@develop
+    uses: dolorestec/devops/.github/workflows/setup-environment.yml@develop
 
-  publish:
-    name: Docker Build and Push
-    needs: setup
-    secrets: inherit
-    uses: dolorestec/devops/.github/workflows/docker-build-push.yml@develop
-  
-  release:
-    name: Create Branch
-    needs: publish
-    secrets: inherit
-    uses: dolorestec/devops/.github/workflows/release-branch.yml@develop

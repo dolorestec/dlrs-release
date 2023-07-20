@@ -18,7 +18,7 @@ jobs:
     uses: dolorestec/devops/.github/workflows/docker-publish.yml@develop
   
   release:
-    name: Release gitflow
+    name: Gitflow Workflow
     needs: publish
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/release-gitflow.yml@develop

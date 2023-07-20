@@ -1,5 +1,5 @@
 name: Develop
-run-name: Push Develop
+run-name: Push Workflow
 
 on:
   workflow_call:
@@ -7,18 +7,18 @@ on:
 
 jobs:  
   setup:
-    name: Setup Environment
+    name: Environment
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/setup-environment.yml@develop
 
   publish:
-    name: Docker Build and Push
+    name: Docker
     needs: setup
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/docker-build-push.yml@develop
   
   release:
-    name: Create Branch
+    name: Create
     needs: publish
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/release-branch.yml@develop

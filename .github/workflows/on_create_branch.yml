@@ -1,11 +1,10 @@
-name: First Run Branch [releases/**, hotfix/**]
+name: First Run Branch [release, hotfix]
 run-name: Publish snapshot
 
 on:
   push:
-    branches:
-      - 'releases/**'
-      - 'hotfix/**'
+    branches: [release*, hotfix*]
+
 jobs:  
   setup:
     name: Setup environment

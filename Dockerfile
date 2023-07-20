@@ -22,8 +22,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends build-essential
 # Register Poetry in PATH
 ENV PATH="${POETRY_VIRTUALENV_PATH}/bin:${PATH}"
 
-COPY ./pyproject.toml ./poetry.lock* /app/
-
 # MOTD - Message of the day
 RUN echo "\
 ===================================================================\n\

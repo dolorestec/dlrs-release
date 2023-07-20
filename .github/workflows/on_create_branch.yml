@@ -2,11 +2,9 @@ name: First Run Branch [release, hotfix]
 run-name: Publish snapshot
 
 on:
-  pull_request:
-    types: [opened, synchronize, reopened]
-    branches:
-      - release/*
-      - hotfix/*
+  push:
+    branches: [ release/*, hotfix/* ]
+  workflow_dispatch:
 
 jobs:  
   setup:

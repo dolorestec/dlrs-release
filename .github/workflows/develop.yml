@@ -16,3 +16,9 @@ jobs:
     needs: setup
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/docker-build-push.yml@develop
+  
+  release:
+    name: Create Branch
+    needs: publish
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/release-branch.yml@develop

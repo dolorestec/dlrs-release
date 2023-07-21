@@ -20,6 +20,6 @@ jobs:
   
   release:
     name: Gitflow Workflow
-    needs: setup
+    needs: publish
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/release-gitflow.yml@develop

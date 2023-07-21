@@ -12,11 +12,11 @@ jobs:
     secrets: inherit
     uses: dolorestec/devops/.github/workflows/setup-environment.yml@develop
 
-#  publish:
-#    name: Docker publish
-#    needs: setup
-#    secrets: inherit
-#    uses: dolorestec/devops/.github/workflows/docker-publish.yml@develop
+  publish:
+    name: Docker publish
+    needs: setup
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/docker-publish.yml@develop
   
   release:
     name: Gitflow Workflow

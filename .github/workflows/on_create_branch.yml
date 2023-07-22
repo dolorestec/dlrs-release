@@ -2,11 +2,12 @@ name: First Run Branch [release, hotfix]
 run-name: Publish snapshot
 
 on:
-  push:
-    branches: [ release/*, hotfix/* ]
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["Gitflow workflow"]
+    branches: [release/*, hotfix/*]
+    types:
+      - completed
 
-    
 jobs:  
   setup:
     name: Setup environment

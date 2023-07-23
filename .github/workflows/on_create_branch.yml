@@ -3,19 +3,105 @@ run-name: Publish snapshot
 
 on:
   workflow_run:
-    workflows: ["Gitflow workflow"]
+    workflows: ["Push on [main,develop]"]
     branches: [release/*, hotfix/*]
     types:
       - completed
 
 jobs:  
-  setup:
-    name: Setup environment
-    secrets: inherit
-    uses: dolorestec/devops/.github/workflows/setup-environment.yml@develop
+variables:
+  name: Variables
+  timeout-minutes: 3
+  runs-on: ubuntu-latest
+  env:
+    DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
+    DLRS_VERSION_FILE: ${{ format('{0}.json',github.event.repository.name) }}
+  
+  steps:
+    - name: Checkout
+      uses: Actions/checkout@v3
+      with:
+        repository: ${{ github.repository }}
+        ref: ${{ github.ref_name }}
+        fetch-depth: 0
 
-  publish:
-    name: Docker publish
-    needs: setup
-    secrets: inherit
-    uses: dolorestec/devops/.github/workflows/docker-publish.yml@develop
+    - name: Create file
+      run: |
+        echo "::group::Create file"
+        touch ${{env.DLRS_ENV_FILE}}
+        echo "::endgroup::"
+
+    - name: Set Variables
+      id: setup
+      run: |
+        echo "::group::Environment Variables"
+        echo "DLRS_NAME=${{ github.event.repository.name }}" >> ${{env.DLRS_ENV_FILE}}
+        echo "DLRS_VERSION=$(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g' | awk -F'-' '{print $1}' | sed 's/[^0-9.]*//g')" >> ${{env.DLRS_ENV_FILE}}
+        echo "DLRS_REPOSITORY=${{ github.repository }}">> ${{env.DLRS_ENV_FILE}}
+        echo "DLRS_BRANCH=$(echo ${{ github.ref }} | awk -F'/' '{print $NF}')" >> ${{env.DLRS_ENV_FILE}}
+        echo "DLRS_TAG=$(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g')" >> ${{env.DLRS_ENV_FILE}}
+        echo "DLRS_SUFFIX=$( echo $(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g') | awk -F'-' '{print $2}')" >> ${{env.DLRS_ENV_FILE}}
+        echo "::endgroup::"
+
+    - name: Create file
+      run: |
+        echo "::group::Create file"
+        cat ${{env.DLRS_ENV_FILE}}
+        echo "::endgroup::"
+
+    - name: Upload file
+      uses: actions/upload-artifact@v3
+      with:
+        name: ${{env.DLRS_ENV_FILE}}
+        path: ${{env.DLRS_ENV_FILE}}
+
+publish:
+name: Publish
+timeout-minutes: 3
+runs-on: ubuntu-latest
+needs: variables
+env:
+  DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
+ 
+steps:
+  - name: Load variables
+    uses: dolorestec/devops/.github/actions/environment/load@develop
+    with:
+      env_file: ${{ env.DLRS_ENV_FILE }}
+  
+  - name: Create buildx builder
+    uses: dolorestec/devops/.github/actions/docker/buildx/create@develop
+    with:
+      name: ${{ env.DLRS_NAME }}
+    env:
+      DLRS_NAME: ${{ env.DLRS_NAME }}
+
+  - name: Login to ghcr.io
+    uses: dolorestec/devops/.github/actions/docker/registry/login@develop
+    with:
+      registry: ${{ env.REGISTRY }}
+      username: ${{ env.USERNAME }}
+      token: ${{ env.TOKEN }}
+    env:
+      REGISTRY: ghcr.io
+      USERNAME: ${{ github.actor }}
+      TOKEN: ${{ github.token }}
+
+  - name: Build image
+    env:
+      DLRS_REPOSITORY: ${{ env.DLRS_REPOSITORY }}
+      DLRS_TAG: ${{ env.DLRS_TAG }}
+    uses: dolorestec/devops/.github/actions/docker/buildx/build@develop
+    with:
+      image: ${{ env.DLRS_REPOSITORY }}
+      tag: ${{ env.DLRS_TAG }}
+      context: .
+      dockerfile: Dockerfile
+      push: true
+
+  - name: Logout from ghcr.io
+    env:
+      REGISTRY: ghcr.io
+    uses: dolorestec/devops/.github/actions/docker/registry/logout@develop
+    with:
+      registry: ${{ env.REGISTRY }}

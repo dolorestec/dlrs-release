@@ -154,16 +154,12 @@ jobs:
           git config --global user.name ${{ github.actor }}
             
           git checkout -b ${{ env.DRLS_NEW_BRANCH}}
-          git merge --no-ff ${{ env.DLRS_BRANCH }} -m "[CI] - Create branch ${{ env.DRLS_NEW_BRANCH }}"
           sed -i 's/${{env.DLRS_TAG}}/${{ env.DLRS_NEW_TAG }}/g' "${{ env.DLRS_NAME }}.json"
           git add "${{ env.DLRS_NAME }}.json"
           git commit -m "[CI] - Create branch ${{ env.DLRS_NEW_BRANCH }}"
           git branch -D ${{ env.DLRS_BRANCH }}
-          git push origin ${{ env.DLRS_NEW_BRANCH }}
-          gh auth login --with-token ${{ env.GH_TOKEN }}
-          gh pr create --title "[CI] - Create branch ${{ env.DRLS_NEW_BRANCH }}" --body "[CI] - Create branch ${{ env.DRLS_NEW_BRANCH }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DRLS_NEW_BRANCH }}
-          gh pr merge ${{ env.DRLS_NEW_BRANCH }} --squash --auto
-          gh logout
+          git push -u origin ${{ env.DLRS_NEW_BRANCH }}
+          hub pull-request -b ${{ env.DLRS_BRANCH }} -h ${{ env.DRLS_NEW_BRANCH }} -m "[CI] - Create branch ${{ env.DRLS_NEW_BRANCH }}"
           echo "::endgroup::"
 
       - name: Pull request

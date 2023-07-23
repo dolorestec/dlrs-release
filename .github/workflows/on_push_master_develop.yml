@@ -39,7 +39,7 @@ jobs:
           run: |
             echo "::group::Create file"
             touch ${{env.DLRS_ENV_FILE}}
-            echo $(env | grep DLRS_) > ${{env.DLRS_ENV_FILE}}
+            echo $(env | grep DLRS_) | xargs -I {} echo "{}" > ${{env.DLRS_ENV_FILE}}
           env:
             DLRS_ENV_FILE: ${{ format('{0}.json',github.event.repository.name) }}
   

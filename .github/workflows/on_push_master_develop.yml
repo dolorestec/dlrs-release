@@ -93,7 +93,7 @@ jobs:
           DLRS_TAG: ${{ env.DLRS_TAG }}
         uses: dolorestec/devops/.github/actions/docker/buildx/build@develop
         with:
-          image: "ghcr.io${{ env.DLRS_REPOSITORY }}"
+          image: "ghcr.io/${{ env.DLRS_REPOSITORY }}"
           tag: ${{ env.DLRS_TAG }}
           context: .
           dockerfile: Dockerfile

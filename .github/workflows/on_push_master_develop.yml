@@ -4,14 +4,16 @@ run-name: Push Workflow
 on:
   workflow_dispatch:
 
+concurrency:
+    group: ${{ github.ref }}
+    cancel-in-progress: true
+
+
 jobs:
   variables:
-      name: Variables
+      name: Variables environment
       timeout-minutes: 3
       runs-on: ubuntu-latest
-      concurrency:
-        group: ${{ github.ref }}
-        cancel-in-progress: true
       
       steps:
         - name: Checkout
@@ -55,9 +57,7 @@ jobs:
     name: Publish
     timeout-minutes: 3
     runs-on: ubuntu-latest
-    concurrency:
-      group: ${{ github.ref }}
-      cancel-in-progress: true
+    needs: variables
      
     steps:
       - name: Checkout
@@ -121,7 +121,57 @@ jobs:
           registry: ${{ env.REGISTRY }}
   
   release:
-    name: Gitflow Workflow
+    name: Release
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
     needs: publish
-    secrets: inherit
-    uses: dolorestec/devops/.github/workflows/release-gitflow.yml@develop
+     
+    steps:
+      - name: Load variables
+        id: variables
+        uses: dolorestec/devops/.github/actions/variables/load@develop
+        with:
+          env_file: ${{ env.DLRS_ENV_FILE }}
+        env:
+          DLRS_ENV_FILE: ${{ format('{0}.env',github.event.repository.name) }}
+
+      - name: Versioning
+        id: versioning
+        uses: dolorestec/devops/.github/actions/versions@develop
+        with:
+          branch: ${{ env.DLRS_BRANCH }}
+          tag: ${{ env.DLRS_TAG }}
+          version: ${{ env.DLRS_VERSION }}
+          major: ${{ env.DLRS_MAJOR }}
+          minor: ${{ env.DLRS_MINOR }}
+        env:
+          DLRS_BRANCH: ${{ env.DLRS_BRANCH }}
+          DLRS_TAG: ${{ env.DLRS_TAG }}
+          DLRS_VERSION: ${{ env.DLRS_VERSION }}
+          DLRS_MAJOR: ${{ github.ref_name == 'develop' && 'true' || 'false' }}
+          DLRS_MINOR: ${{ github.ref_name == 'main' && 'true' || 'false' }}
+
+      - name: Create branch
+        env:
+          DLRS_NAME: ${{ env.DLRS_NAME }}
+          DLRS_BRANCH: ${{ env.DLRS_BRANCH }}
+          DRLS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
+          DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
+          DLRS_TAG: ${{ env.DLRS_TAG }}
+          DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "::group::Create branch"
+          echo "Branch:${{ env.DLRS_BRANCH }} -> ${{ env.DRLS_NEW_BRANCH}}"
+  
+          git config --global user.email "${{ github.actor }}jpa@gmail.com"
+          git config --global user.name ${{ github.actor }}
+            
+          git checkout -b ${{ env.DRLS_NEW_BRANCH}}
+          git merge --no-ff ${{ env.DLRS_BRANCH }} -m "[CI] - Create branch ${{ env.DRLS_NEW_BRANCH }}"
+          sed -i 's/${{env.DLRS_TAG}}/${{ env.DLRS_NEW_TAG }}/g' "${{ env.DLRS_NAME }}.json"
+          git add "${{ env.DLRS_NAME }}.json"
+          git commit -m "[CI] - Create branch ${{ env.DLRS_NEW_BRANCH }}"
+          git branch -D ${{ env.DLRS_BRANCH }}
+          git push origin ${{ env.DLRS_NEW_BRANCH }}
+          echo "::endgroup::"

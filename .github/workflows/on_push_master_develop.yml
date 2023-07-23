@@ -1,5 +1,5 @@
-name: push-workflow
-run-name: Push Workflow
+name: Create Branch
+run-name: Gitflow
 
 on:
   workflow_dispatch:

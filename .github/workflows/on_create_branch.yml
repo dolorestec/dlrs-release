@@ -1,11 +1,12 @@
-name: First Run Branch [release, hotfix]
-run-name: Publish snapshot
+name: create-branch
+run-name: Create branch
 
 on:
   push:
     branches: [release/*, hotfix/*]
+  workflow_call:
   workflow_run:
-    workflows: ["Push on [main,develop]"]
+    workflows: ["push-workflow"]
     branches: [release/*, hotfix/*]
     types:
       - completed

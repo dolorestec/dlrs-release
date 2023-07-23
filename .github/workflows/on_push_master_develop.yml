@@ -12,12 +12,12 @@ jobs:
       env_file: ${{ format('{0}.env',github.event.repository.name) }}
       version_file: ${{ format('{0}.json',github.event.repository.name) }}
       variables: |
-        DLRS_PKG_NAME=${{ github.event.repository.name }}
-        DLRS_PKG_VERSION=$(cat ${{ format('{0}.json',github.event.repository.name) }} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g' | awk -F'-' '{print $1}' | sed 's/[^0-9.]*//g')
-        DLRS_PKG_REPOSITORY=${{ github.repository }}
-        DLRS_PKG_BRANCH=${{ github.ref_name }}
-        DLRS_TAG=$(cat ${{ format('{0}.env',github.event.repository.name) }} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g')
-        DLRS_SUFFIX=$( echo $(cat ${{ format('{0}.json',github.event.repository.name) }}| grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g') | awk -F'-' '{print $2}')
+        "DLRS_PKG_NAME=${{ github.event.repository.name }}"
+        "DLRS_PKG_VERSION=$(cat ${{ format('{0}.json',github.event.repository.name) }} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g' | awk -F'-' '{print $1}' | sed 's/[^0-9.]*//g')"
+        "DLRS_PKG_REPOSITORY=${{ github.repository }}"
+        "DLRS_PKG_BRANCH=${{ github.ref_name }}"
+        "DLRS_TAG=$(cat ${{ format('{0}.env',github.event.repository.name) }} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g')"
+        "DLRS_SUFFIX=$( echo $(cat ${{ format('{0}.json',github.event.repository.name) }}| grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g') | awk -F'-' '{print $2}')"
 
 #  publish:
 #    name: Docker publish

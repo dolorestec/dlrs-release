@@ -43,7 +43,7 @@ jobs:
             touch ${{env.DLRS_ENV_FILE}}
             echo $(env | grep DLRS_) | xargs -I {} echo "{}" > ${{env.DLRS_ENV_FILE}}
           env:
-            DLRS_ENV_FILE: ${{ format('{0}.env',github.event.repository.name) }}
+            DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
   
         - name: Upload file
           uses: actions/upload-artifact@v3
@@ -51,7 +51,7 @@ jobs:
             name: ${{ github.event.repository.name }}
             path: ${{env.DLRS_ENV_FILE}}
           env:
-            DLRS_ENV_FILE: ${{ format('{0}.env',github.event.repository.name) }}
+            DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
 
   publish:
     name: Publish
@@ -73,7 +73,7 @@ jobs:
           name: ${{ github.event.repository.name }}
           path: ${{env.DLRS_ENV_FILE}}
         env:
-          DLRS_ENV_FILE: ${{ format('{0}.env',github.event.repository.name) }}
+          DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
 
       - name: Set Variables
         run: |
@@ -81,7 +81,7 @@ jobs:
           cat ${{env.DLRS_ENV_FILE}} | xargs -I {} echo "{}" >> $GITHUB_ENV
           echo "::endgroup::"
         env:
-          DLRS_ENV_FILE: ${{ format('{0}.env',github.event.repository.name) }}
+          DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
       
       - name: Create buildx builder
         uses: dolorestec/devops/.github/actions/docker/buildx/create@develop
@@ -133,7 +133,7 @@ jobs:
         with:
           env_file: ${{ env.DLRS_ENV_FILE }}
         env:
-          DLRS_ENV_FILE: ${{ format('{0}.env',github.event.repository.name) }}
+          DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
 
       - name: Versioning
         id: versioning

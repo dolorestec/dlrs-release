@@ -141,7 +141,6 @@ jobs:
         env:
           DLRS_NAME: ${{ env.DLRS_NAME }}
           DLRS_BRANCH: ${{ env.DLRS_BRANCH }}
-          DRLS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
           DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
           DLRS_TAG: ${{ env.DLRS_TAG }}
           DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
@@ -163,8 +162,15 @@ jobs:
       - name: Pull request
         run: |
           echo "::group::Pull request"
-          gh auth login --with-token <<< ${{ github.token }}
+          gh auth login --with-token <<< ${{ env.GITHUB_TOKEN }}
+          gh pr create --title "[CI] - Create branch ${{ env.DLRS_NEW_BRANCH }}" --body "Create branch ${{ env.DLRS_NEW_BRANCH }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DLRS_NEW_BRANCH }}
+          gh pr merge ${{ env.DLRS_NEW_BRANCH }} --squash --auto
           echo "::endgroup::"
+        env:
+          DLRS_NAME: ${{ env.DLRS_NAME }}
+          DLRS_BRANCH: ${{ env.DLRS_BRANCH }}
+          DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
+          GITHUB_TOKEN: ${{ github.token }}
 
       - if : ${{ failure() }}
         name: Rollback branch

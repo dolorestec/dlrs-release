@@ -9,7 +9,7 @@ on:
     branches: [release/*, hotfix/*]
     types:
       - completed
-
+  
 concurrency:
   group: ${{ github.ref }}
   cancel-in-progress: true
@@ -104,6 +104,7 @@ jobs:
           context: .
           dockerfile: Dockerfile
           push: true
+          load: true
 
       - name: Logout from ghcr.io
         env:

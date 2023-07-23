@@ -3,7 +3,10 @@ run-name: Publish
 
 on:
   pull_request:
-    types: [opened]
+    types: [closed]
+    branches:
+      - release/*
+      - hotfix/*
   workflow_call:
   
 concurrency:

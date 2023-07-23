@@ -51,14 +51,14 @@ jobs:
           env:
             DLRS_ENV_FILE: ${{ format('{0}.json',github.event.repository.name) }}
 
-#  publish:
-#    name: Docker publish
-#    needs: setup
-#    secrets: inherit
-#    uses: dolorestec/devops/.github/workflows/docker-publish.yml@develop
+  publish:
+    name: Docker publish
+    needs: variables
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/docker-publish.yml@develop
   
-#  release:
-#    name: Gitflow Workflow
-#    needs: publish
-#    secrets: inherit
-#    uses: dolorestec/devops/.github/workflows/release-gitflow.yml@develop
+  release:
+    name: Gitflow Workflow
+    needs: publish
+    secrets: inherit
+    uses: dolorestec/devops/.github/workflows/release-gitflow.yml@develop

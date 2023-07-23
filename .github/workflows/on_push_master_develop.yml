@@ -52,10 +52,73 @@ jobs:
             DLRS_ENV_FILE: ${{ format('{0}.env',github.event.repository.name) }}
 
   publish:
-    name: Docker publish
-    needs: variables
-    secrets: inherit
-    uses: dolorestec/devops/.github/workflows/docker-publish.yml@develop
+    name: Publish
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ${{ github.ref }}
+      cancel-in-progress: true
+     
+    steps:
+      - name: Checkout
+        uses: Actions/checkout@v3
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref_name }}
+          fetch-depth: 0
+
+      - name: Load variables
+        uses: actions/download-artifact@v2
+        with:
+          name: ${{ github.event.repository.name }}
+          path: ${{env.DLRS_ENV_FILE}}
+        env:
+          DLRS_ENV_FILE: ${{ format('{0}.env',github.event.repository.name) }}
+
+      - name: Set Variables
+        run: |
+          echo "::group::Environment Variables"
+          cat ${{env.DLRS_ENV_FILE}} | xargs -I {} echo "{}" >> $GITHUB_ENV
+          echo "::endgroup::"
+        env:
+          DLRS_ENV_FILE: ${{ format('{0}.env',github.event.repository.name) }}
+      
+      - name: Create buildx builder
+        uses: dolorestec/devops/.github/actions/docker/buildx/create@develop
+        with:
+          name: ${{ env.DLRS_NAME }}
+        env:
+          DLRS_NAME: ${{ env.DLRS_NAME }}
+  
+      - name: Login to ghcr.io
+        uses: dolorestec/devops/.github/actions/docker/registry/login@develop
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ env.USERNAME }}
+          token: ${{ env.TOKEN }}
+        env:
+          REGISTRY: ghcr.io
+          USERNAME: ${{ github.actor }}
+          TOKEN: ${{ github.token }}
+  
+      - name: Build image
+        env:
+          DLRS_REPOSITORY: ${{ env.DLRS_REPOSITORY }}
+          DLRS_TAG: ${{ env.DLRS_TAG }}
+        uses: dolorestec/devops/.github/actions/docker/buildx/build@develop
+        with:
+          image: ${{ env.DLRS_REPOSITORY }}
+          tag: ${{ env.DLRS_TAG }}
+          context: .
+          dockerfile: Dockerfile
+          push: true
+  
+      - name: Logout from ghcr.io
+        env:
+          REGISTRY: ghcr.io
+        uses: dolorestec/devops/.github/actions/docker/registry/logout@develop
+        with:
+          registry: ${{ env.REGISTRY }}
   
   release:
     name: Gitflow Workflow

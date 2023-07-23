@@ -19,14 +19,14 @@ jobs:
         DLRS_TAG=$(cat ${{ format('{0}.env',github.event.repository.name) }} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g')
         DLRS_SUFFIX=$( echo $(cat ${{ format('{0}.json',github.event.repository.name) }}| grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g') | awk -F'-' '{print $2}')
 
-  publish:
-    name: Docker publish
-    needs: setup
-    secrets: inherit
-    uses: dolorestec/devops/.github/workflows/docker-publish.yml@develop
+#  publish:
+#    name: Docker publish
+#    needs: setup
+#    secrets: inherit
+#    uses: dolorestec/devops/.github/workflows/docker-publish.yml@develop
   
-  release:
-    name: Gitflow Workflow
-    needs: publish
-    secrets: inherit
-    uses: dolorestec/devops/.github/workflows/release-gitflow.yml@develop
+#  release:
+#    name: Gitflow Workflow
+#    needs: publish
+#    secrets: inherit
+#    uses: dolorestec/devops/.github/workflows/release-gitflow.yml@develop

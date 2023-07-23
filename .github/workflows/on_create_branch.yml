@@ -5,11 +5,6 @@ on:
   push:
     branches: [release/*, hotfix/*]
   workflow_call:
-  workflow_run:
-    workflows: ["push-workflow"]
-    branches: [release/*, hotfix/*]
-    types:
-      - completed
   
 concurrency:
   group: ${{ github.ref }}

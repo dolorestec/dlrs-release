@@ -1,13 +1,8 @@
 name: push-workflow
-run-name: Push
+run-name: Push Workflow
 
 on:
   workflow_dispatch:
-  workflow_run:
-    workflows: ["create-branch"]
-    branches: [release/*, hotfix/*]
-    types:
-      - completed
 
 concurrency:
     group: ${{ github.ref }}
@@ -111,8 +106,8 @@ jobs:
         with:
           registry: ${{ env.REGISTRY }}
   
-  release:
-    name: Release
+  branch:
+    name: Branch
     timeout-minutes: 3
     runs-on: ubuntu-latest
     needs: publish

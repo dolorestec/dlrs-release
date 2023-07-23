@@ -160,6 +160,7 @@ jobs:
           git branch -D ${{ env.DLRS_BRANCH }}
           git push -u origin ${{ env.DLRS_NEW_BRANCH }}
           hub pull-request -b ${{ env.DLRS_BRANCH }} -h ${{ env.DRLS_NEW_BRANCH }} -m "[CI] - Create branch ${{ env.DRLS_NEW_BRANCH }}"
+          hub api -X POST /repos/${{ github.repository }}/actions/workflows/${{ github.workflow_id }}/dispatches -F ref=${{ env.DRLS_NEW_BRANCH }}
           echo "::endgroup::"
 
       - name: Pull request

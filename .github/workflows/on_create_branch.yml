@@ -2,15 +2,7 @@ name: Publish branch
 run-name: Publish branch
 
 on:
-  pull_request:
-    types: [opened]
-    branches:
-      - release/*
-      - hotfix/*
-  push:
-    branches:
-      - release/*
-      - hotfix/*
+  workflow_call:
 
 jobs:  
   variables:

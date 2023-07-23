@@ -161,8 +161,7 @@ jobs:
           git add "${{ env.DLRS_NAME }}.json"
           git commit -m "[DLRS-CI] - Update version ${{ env.DLRS_NEW_TAG }}"
           git push -u origin ${{ env.DLRS_NEW_BRANCH }}
-          gh pr create --title "[DLRS-CI] - Create branch ${{ env.DLRS_NEW_BRANCH }}" --body "Create branch ${{ env.DLRS_NEW_BRANCH }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DLRS_NEW_BRANCH }}
-          gh pr merge ${{ env.DLRS_NEW_BRANCH }} --squash --auto
+          gh workflow run on_create_branch.yml --ref ${{ env.DLRS_NEW_BRANCH }}
           echo "::endgroup::"
 
       - if : ${{ failure() }}

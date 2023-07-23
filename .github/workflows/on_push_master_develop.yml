@@ -52,7 +52,7 @@ jobs:
         - name: Upload file
           uses: actions/upload-artifact@v3
           with:
-            name: ${{ github.event.repository.name }}
+            name: ${{env.DLRS_ENV_FILE}}
             path: ${{env.DLRS_ENV_FILE}}
 
   publish:
@@ -72,7 +72,7 @@ jobs:
       - name: Load variables
         uses: actions/download-artifact@v2
         with:
-          name: ${{ github.event.repository.name }}
+          name: ${{env.DLRS_ENV_FILE}}
           path: ${{env.DLRS_ENV_FILE}}
         env:
           DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}

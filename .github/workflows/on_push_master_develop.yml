@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   variables:
-      name: Variables environment
+      name: Variables
       timeout-minutes: 3
       runs-on: ubuntu-latest
       env:
@@ -64,13 +64,6 @@ jobs:
       DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
      
     steps:
-      - name: Checkout
-        uses: Actions/checkout@v3
-        with:
-          repository: ${{ github.repository }}
-          ref: ${{ github.ref_name }}
-          fetch-depth: 0
-
       - name: Load variables
         uses: dolorestec/devops/.github/actions/environment/load@develop
         with:

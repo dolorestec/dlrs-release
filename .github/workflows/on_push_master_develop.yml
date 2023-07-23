@@ -4,30 +4,52 @@ run-name: Push Workflow
 on:
   workflow_dispatch:
 
-jobs:  
-  setup:
-    name: Setup environment
-    uses: dolorestec/devops/.github/workflows/setup-environment.yml@develop
-    with:
-      env_file: ${{ format('{0}.env',github.event.repository.name) }}
-      version_file: ${{ format('{0}.json',github.event.repository.name) }}
-      variables: |
-        """{
-          "DLRS_PKG_NAME":"${{ github.event.repository.name }}",
-          "DLRS_PKG_VERSION":"$(cat ${{ format('{0}.json',github.event.repository.name) }} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g' | awk -F'-' '{print $1}' | sed 's/[^0-9.]*//g')",
-          "DLRS_PKG_REPOSITORY":"${{ github.repository }}",
-          "DLRS_PKG_BRANCH":"${{ github.ref_name }}",
-          "DLRS_PKG_TAG":"$(cat ${{ format('{0}.env',github.event.repository.name) }} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g')",
-          "DLRS_PKGSUFFIX":"$( echo $(cat ${{ format('{0}.env',github.event.repository.name) }} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g') | awk -F'-' '{print $2}')"
-        }"""
+jobs:
+  variables:
+      name: Variables
+      timeout-minutes: 3
+      runs-on: ubuntu-latest
+      concurrency:
+        group: ${{ github.ref }}
+        cancel-in-progress: true
+      
+      steps:
+        - name: Checkout
+          uses: Actions/checkout@v3
+          with:
+            repository: ${{ github.repository }}
+            ref: ${{ github.ref_name }}
+            fetch-depth: 0
 
-        
-#DLRS_PKG_NAME=${{ github.event.repository.name }}
-#DLRS_PKG_VERSION=$(cat ${{ format('{0}.json',github.event.repository.name) }} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g' | awk -F'-' '{print $1}' | sed 's/[^0-9.]*//g')
-#DLRS_PKG_REPOSITORY=${{ github.repository }}
-#DLRS_PKG_BRANCH=${{ github.ref_name }}
-#DLRS_TAG=$(cat ${{ format('{0}.env',github.event.repository.name) }} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g')
+        - name: Set Variables
+          id: setup
+          run: |
+            echo "::group::Environment Variables"
+            echo "DLRS_NAME=${{ github.event.repository.name }}" >> $GITHUB_ENV
+            echo "DLRS_VERSION=$(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g' | awk -F'-' '{print $1}' | sed 's/[^0-9.]*//g')" >> $GITHUB_ENV
+            echo "DLRS_REPOSITORY=${{ github.repository }}">> $GITHUB_ENV
+            echo "DLRS_BRANCH=$(echo ${{ github.ref }} | awk -F'/' '{print $NF}')" >> $GITHUB_ENV
+            echo "DLRS_TAG=$(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g')" >> $GITHUB_ENV
+            echo "DLRS_SUFFIX=$( echo $(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g') | awk -F'-' '{print $2}')" >> $GITHUB_ENV
+            echo "::endgroup::"
+          env:
+            DLRS_VERSION_FILE: ${{ format('{0}.json',github.event.repository.name) }}
 
+        - name: Create file
+          run: |
+            echo "::group::Create file"
+            touch ${{env.DLRS_ENV_FILE}}
+            echo $(env | grep DLRS_) > ${{env.DLRS_ENV_FILE}}
+          env:
+            DLRS_ENV_FILE: ${{ format('{0}.json',github.event.repository.name) }}
+  
+        - name: Upload file
+          uses: actions/upload-artifact@v3
+          with:
+            name: ${{ github.event.repository.name }}
+            path: ${{env.DLRS_ENV_FILE}}
+          env:
+            DLRS_ENV_FILE: ${{ format('{0}.json',github.event.repository.name) }}
 
 #  publish:
 #    name: Docker publish

@@ -7,6 +7,10 @@ on:
     branches:
       - release/*
       - hotfix/*
+  push:
+    branches:
+      - release/*
+      - hotfix/*
 
 jobs:  
   variables:

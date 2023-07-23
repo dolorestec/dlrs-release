@@ -145,7 +145,6 @@ jobs:
           DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
           DLRS_TAG: ${{ env.DLRS_TAG }}
           DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
-          GH_TOKEN: ${{ github.token }}
         run: |
           echo "::group::Create branch"
           echo "Branch:${{ env.DLRS_BRANCH }} -> ${{ env.DRLS_NEW_BRANCH}}"
@@ -159,12 +158,10 @@ jobs:
           git commit -m "[CI] - Create branch ${{ env.DLRS_NEW_BRANCH }}"
           git branch -D ${{ env.DLRS_BRANCH }}
           git push -u origin ${{ env.DLRS_NEW_BRANCH }}
-          hub pull-request -b ${{ env.DLRS_BRANCH }} -h ${{ env.DRLS_NEW_BRANCH }} -m "[CI] - Create branch ${{ env.DRLS_NEW_BRANCH }}"
-          hub api -X POST /repos/${{ github.repository }}/actions/workflows/${{ github.workflow_id }}/dispatches -F ref=${{ env.DRLS_NEW_BRANCH }}
           echo "::endgroup::"
 
       - name: Pull request
         run: |
           echo "::group::Pull request"
-          hub pull-request -b ${{ env.DLRS_BRANCH }} -h ${{ env.DRLS_NEW_BRANCH }} -m "[CI] - Create branch ${{ env.DRLS_NEW_BRANCH }}"
+          gh auth login --with-token <<< ${{ github.token }}
           echo "::endgroup::"

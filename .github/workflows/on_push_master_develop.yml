@@ -72,7 +72,7 @@ jobs:
           fetch-depth: 0
 
       - name: Load variables
-        uses: dolorestec/devops/.github/actions/variables/load@develop
+        uses: dolorestec/devops/.github/actions/environment/load@develop
         with:
           env_file: ${{ env.DLRS_ENV_FILE }}
       
@@ -122,7 +122,7 @@ jobs:
     steps:
       - name: Load variables
         id: variables
-        uses: dolorestec/devops/.github/actions/variables/load@develop
+        uses: dolorestec/devops/.github/actions/environment/load@develop
         with:
           env_file: ${{ env.DLRS_ENV_FILE }}
         env:

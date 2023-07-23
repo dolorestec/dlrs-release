@@ -3,15 +3,10 @@ run-name: Publish
 
 on:
   pull_request:
-    types: [closed]
+    types: [opened]
     branches:
       - release/*
       - hotfix/*
-  workflow_call:
-  
-concurrency:
-  group: ${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:  
   variables:

@@ -163,8 +163,7 @@ jobs:
         run: |
           echo "::group::Pull request"
           gh auth login --with-token <<< ${{ env.GITHUB_TOKEN }}
-          gh pr create --title "[CI] - Create branch ${{ env.DLRS_NEW_BRANCH }}" --body "Create branch ${{ env.DLRS_NEW_BRANCH }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DLRS_NEW_BRANCH }}
-          gh pr merge ${{ env.DLRS_NEW_BRANCH }} --squash --auto
+          gh pr create --title "[DLRS-CI] - Create branch ${{ env.DLRS_NEW_BRANCH }}" --body "Create branch ${{ env.DLRS_NEW_BRANCH }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DLRS_NEW_BRANCH }}
           echo "::endgroup::"
         env:
           DLRS_NAME: ${{ env.DLRS_NAME }}

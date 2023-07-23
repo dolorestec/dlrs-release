@@ -1,5 +1,5 @@
-name: Create Branch
-run-name: Gitflow
+name: Gitflow Branchs
+run-name: Gitflow Branchs
 
 on:
   workflow_dispatch:

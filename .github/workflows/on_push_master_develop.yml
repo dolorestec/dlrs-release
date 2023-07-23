@@ -60,6 +60,8 @@ jobs:
     timeout-minutes: 3
     runs-on: ubuntu-latest
     needs: variables
+    env:
+      DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
      
     steps:
       - name: Checkout
@@ -70,20 +72,9 @@ jobs:
           fetch-depth: 0
 
       - name: Load variables
-        uses: actions/download-artifact@v2
+        uses: dolorestec/devops/.github/actions/variables/load@develop
         with:
-          name: ${{env.DLRS_ENV_FILE}}
-          path: ${{env.DLRS_ENV_FILE}}
-        env:
-          DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
-
-      - name: Set Variables
-        run: |
-          echo "::group::Environment Variables"
-          cat ${{env.DLRS_ENV_FILE}} | xargs -I {} echo "{}" >> ${{env.DLRS_ENV_FILE}}
-          echo "::endgroup::"
-        env:
-          DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
+          env_file: ${{ env.DLRS_ENV_FILE }}
       
       - name: Create buildx builder
         uses: dolorestec/devops/.github/actions/docker/buildx/create@develop

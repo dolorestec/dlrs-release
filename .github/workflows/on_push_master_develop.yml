@@ -55,8 +55,8 @@ jobs:
             name: ${{env.DLRS_ENV_FILE}}
             path: ${{env.DLRS_ENV_FILE}}
 
-  publish:
-    name: Publish
+  build:
+    name: Build
     timeout-minutes: 3
     runs-on: ubuntu-latest
     needs: variables
@@ -110,7 +110,7 @@ jobs:
     name: Branch
     timeout-minutes: 3
     runs-on: ubuntu-latest
-    needs: publish
+    needs: build
      
     steps:
       - name: Load variables
@@ -160,4 +160,14 @@ jobs:
           git commit -m "[CI] - Create branch ${{ env.DLRS_NEW_BRANCH }}"
           git branch -D ${{ env.DLRS_BRANCH }}
           git push origin ${{ env.DLRS_NEW_BRANCH }}
+          gh auth login --with-token ${{ env.GH_TOKEN }}
+          gh pr create --title "[CI] - Create branch ${{ env.DRLS_NEW_BRANCH }}" --body "[CI] - Create branch ${{ env.DRLS_NEW_BRANCH }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DRLS_NEW_BRANCH }}
+          gh pr merge ${{ env.DRLS_NEW_BRANCH }} --squash --auto
+          gh logout
+          echo "::endgroup::"
+
+      - name: Pull request
+        run: |
+          echo "::group::Pull request"
+          hub pull-request -b ${{ env.DLRS_BRANCH }} -h ${{ env.DRLS_NEW_BRANCH }} -m "[CI] - Create branch ${{ env.DRLS_NEW_BRANCH }}"
           echo "::endgroup::"

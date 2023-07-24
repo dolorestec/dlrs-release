@@ -1,5 +1,5 @@
-name: Gitflow Branchs
-run-name: Gitflow Branchs
+name: On Push [main, develop]
+run-name: On Push
 
 on:
   push:
@@ -141,7 +141,8 @@ jobs:
           DLRS_MAJOR: ${{ github.ref_name == 'develop' && 'true' || 'false' }}
           DLRS_MINOR: ${{ github.ref_name == 'main' && 'true' || 'false' }}
 
-      - name: Create branch
+      - name: Create
+        if: ${{ failure() }}
         env:
           DLRS_NAME: ${{ env.DLRS_NAME }}
           DLRS_BRANCH: ${{ env.DLRS_BRANCH }}
@@ -156,13 +157,50 @@ jobs:
           git config --global user.email "${{ github.actor }}jpa@gmail.com"
           git config --global user.name ${{ github.actor }}
             
-          git checkout -b ${{ env.DLRS_NEW_BRANCH }}
+          git checkout -b ${{ env.DLRS_NEW_BRANCH }} 
           sed -i 's/${{env.DLRS_TAG}}/${{ env.DLRS_NEW_TAG }}/g' "${{ env.DLRS_NAME }}.json"
           git add "${{ env.DLRS_NAME }}.json"
           git commit -m "[DLRS-CI] - Update version ${{ env.DLRS_NEW_TAG }}"
           git push -u origin ${{ env.DLRS_NEW_BRANCH }}
+
           gh workflow run on_create_branch.yml --ref ${{ env.DLRS_NEW_BRANCH }}
           echo "::endgroup::"
+
+      - name: Create Branch
+        env:
+          DLRS_NAME: ${{ env.DLRS_NAME }}
+          DLRS_BRANCH: ${{ env.DLRS_BRANCH }}
+          DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
+          DLRS_TAG: ${{ env.DLRS_TAG }}
+          DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          echo "::group::Create branch"
+          echo "Create new branch ${{ env.DLRS_NEW_BRANCH }} based on ${{ env.DLRS_BRANCH }}"
+
+          gh auth login --with-token ${{ env.GITHUB_TOKEN }}
+          git checkout -b ${{ env.DLRS_NEW_BRANCH }} ${{ env.DLRS_BRANCH }}
+          echo "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}"
+          sed -i 's/${{env.DLRS_TAG}}/${{ env.DLRS_NEW_TAG }}/g' "${{ env.DLRS_NAME }}.json"
+          git add "${{ env.DLRS_NAME }}.json" &> /dev/null
+          git commit -m "[DLRS-CI] - Update version to ${{ env.DLRS_NEW_TAG }}" &> /dev/null
+
+          echo "Pushing changes to ${{ env.DLRS_NEW_BRANCH }}"
+          git push -u origin ${{ env.DLRS_NEW_BRANCH }} &> /dev/null
+
+          gh pr create \
+          --title "[DLRS-CI] - Update version to ${{ env.DLRS_NEW_TAG }}" \
+          --body "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" \
+          --base ${{ env.DLRS_BRANCH }} \
+          --head ${{ env.DLRS_NEW_BRANCH }} \
+          --repo ${{ github.repository }} \
+          --project ${{ github.repository }} \
+          
+          gr merge ${{ env.DLRS_NEW_BRANCH }} \
+          --admin \
+          --auto \
+          --body "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" \
+          --merge
 
       - if : ${{ failure() }}
         name: Rollback branch

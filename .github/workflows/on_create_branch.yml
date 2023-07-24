@@ -2,6 +2,10 @@ name: Publish branch
 run-name: Publish branch
 
 on:
+  pull_request:
+    branches:
+      - release/*
+      - hotfix/*
   workflow_dispatch:
 
 jobs:  

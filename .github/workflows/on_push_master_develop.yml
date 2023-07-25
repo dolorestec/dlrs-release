@@ -107,8 +107,8 @@ jobs:
           DLRS_BRANCH: ${{ needs.variables.outputs.DLRS_BRANCH }}
           DLRS_TAG: ${{ needs.variables.outputs.DLRS_TAG }}
           DLRS_VERSION: ${{ needs.variables.outputs.DLRS_VERSION }}
-          DLRS_MAJOR: ${{ github.ref_name == 'release' && 'true' || 'false' }}
-          DLRS_MINOR: ${{ github.ref_name == 'hhotfix' && 'true' || 'false' }}
+          DLRS_MAJOR: ${{ github.ref_name == 'develop' && 'true' || 'false' }}
+          DLRS_MINOR: ${{ github.ref_name == 'main' && 'true' || 'false' }}
 
       - name: Checkout
         uses: Actions/checkout@v3

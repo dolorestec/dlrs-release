@@ -125,6 +125,9 @@ jobs:
           echo "Create new branch ${{ env.DLRS_NEW_BRANCH }}"
           git checkout -b ${{ env.DLRS_NEW_BRANCH }} ${{ env.DLRS_BRANCH }}
           git branch -D ${{ env.DLRS_BRANCH }}
+          sed -i 's/${{env.DLRS_TAG}}/${{ env.DLRS_NEW_TAG }}/g' "${{ env.DLRS_NAME }}.json"
+          git add "${{ env.DLRS_NAME }}.json" &> /dev/null
+          git commit -m "[DLRS-CI] - Update version to ${{ env.DLRS_NEW_TAG }}" &> /dev/null
           git push origin ${{ env.DLRS_NEW_BRANCH }} &> /dev/null
           gh pr create --title "[DLRS-CI] - Update version to ${{ env.DLRS_NEW_TAG }}" --body "Update version to ${{ env.DLRS_NEW_TAG }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DLRS_NEW_BRANCH }}
           gh pr merge ${{ env.DLRS_NEW_BRANCH }} --auto --admin --merge --author ${{ github.actor }}          
@@ -169,9 +172,7 @@ jobs:
         run: |
           echo "::group::Pull Request"
           echo "Update version to ${{ env.DLRS_NEW_TAG }}"
-          sed -i 's/${{env.DLRS_TAG}}/${{ env.DLRS_NEW_TAG }}/g' "${{ env.DLRS_NAME }}.json"
-          git add "${{ env.DLRS_NAME }}.json" &> /dev/null
-          git commit -m "[DLRS-CI] - Update version to ${{ env.DLRS_NEW_TAG }}" &> /dev/null
+          
           git push origin ${{ env.DLRS_NEW_BRANCH }} &> /dev/null
           echo "::endgroup::"
         env:

@@ -71,7 +71,9 @@ jobs:
           id: set-outputs 
           run: |
             echo "::group::Set Outputs
-            env | grep DLRS > $GITHUB_OUTPUT
+            for i in $(env | grep DLRS); do
+              echo $i
+            done
             echo "::endgroup::"
   
   branch:

@@ -94,6 +94,15 @@ jobs:
     needs: variables
      
     steps:
+      - name: Checkout
+        uses: Actions/checkout@v3
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ env.DLRS_BRANCH }}
+          fetch-depth: 0
+        env:
+          DLRS_BRANCH: ${{ needs.variables.outputs.DLRS_BRANCH }}
+
       - name: Versioning
         id: versioning
         uses: dolorestec/devops/.github/actions/versions@develop
@@ -110,6 +119,23 @@ jobs:
           DLRS_MAJOR: ${{ github.ref_name == 'develop' && 'true' || 'false' }}
           DLRS_MINOR: ${{ github.ref_name == 'main' && 'true' || 'false' }}
 
+      - name: Create Branch
+        run: |
+          echo "::group::Create branch"
+          echo "Create new branch ${{ env.DLRS_NEW_BRANCH }}"
+          git checkout -b ${{ env.DLRS_NEW_BRANCH }} ${{ env.DLRS_BRANCH }}
+          git branch -D ${{ env.DLRS_BRANCH }}
+          gh pr create --title "[DLRS-CI] - Update version to ${{ env.DLRS_NEW_TAG }}" --body "Update version to ${{ env.DLRS_NEW_TAG }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DLRS_NEW_BRANCH }}
+          gh pr merge ${{ env.DLRS_NEW_BRANCH }} --auto --admin --merge --author ${{ github.actor }}          
+          echo "::endgroup::"
+        env:
+          DLRS_NAME: ${{ needs.variables.outputs.DLRS_NAME }}
+          DLRS_BRANCH: ${{ needs.variables.outputs.DLRS_BRANCH }}
+          DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
+          DLRS_TAG: ${{ needs.variables.outputs.DLRS_TAG }} 
+          DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
+          DLRS_NEW_VERSION: ${{ steps.versioning.outputs.version }}
+
       - name: Checkout
         uses: Actions/checkout@v3
         with:
@@ -119,12 +145,17 @@ jobs:
         env:
           DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
 
-      - name: Create Branch
+      - name: Versioning file
         run: |
-          echo "::group::Create branch"
-          echo "Branch: " ${{ env.DLRS_NEW_BRANCH }}
+          echo "::group::Pull Request"
+          echo "Update version to ${{ env.DLRS_NEW_TAG }}"
+          sed -i 's/${{env.DLRS_TAG}}/${{ env.DLRS_NEW_TAG }}/g' "${{ env.DLRS_NAME }}.json"
+          git add "${{ env.DLRS_NAME }}.json" &> /dev/null
+          git commit -m "[DLRS-CI] - Update version to ${{ env.DLRS_NEW_TAG }}" &> /dev/null
+          git push origin ${{ env.DLRS_NEW_BRANCH }} &> /dev/null
           echo "::endgroup::"
         env:
+          DLRS_NAME: ${{ needs.variables.outputs.DLRS_NAME }}
           DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
+          DLRS_TAG: ${{ needs.variables.outputs.DLRS_TAG }} 
           DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
-          DLRS_NEW_VERSION: ${{ steps.versioning.outputs.version }}

@@ -71,8 +71,6 @@ jobs:
           id: outputs 
           run: |
             echo "::group::Set Outputs
-            echo "DLRS_ENV_FILE=${{env.DLRS_ENV_FILE}}" >> $GITHUB_OUTPUT
-            echo "DLRS_VERSION_FILE=${{env.DLRS_VERSION_FILE}}" >> $GITHUB_OUTPUT
             echo "DLRS_NAME=${{ github.event.repository.name }}" >> $GITHUB_OUTPUT
             echo "DLRS_VERSION=$(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g' | awk -F'-' '{print $1}' | sed 's/[^0-9.]*//g')" >> $GITHUB_OUTPUT
             echo "DLRS_REPOSITORY=${{ github.repository }}" >> $GITHUB_OUTPUT
@@ -87,8 +85,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: variables
     env:
-      DLRS_ENV_FILE: ${{ needs.variables.outputs.DLRS_ENV_FILE }}
-      DLRS_VERSION_FILE: ${{ needs.variables.outputs.DLRS_VERSION_FILE }}
       DLRS_NAME: ${{ needs.variables.outputs.DLRS_NAME }}
       DLRS_VERSION: ${{ needs.variables.outputs.DLRS_VERSION }}
       DLRS_REPOSITORY: ${{ needs.variables.outputs.DLRS_REPOSITORY }}
@@ -125,7 +121,7 @@ jobs:
       - name: Create Branch
         run: |
           echo "::group::Create branch"
-          
+          echo "Branch"
           echo "::endgroup::"
         env:
           DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}

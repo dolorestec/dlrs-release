@@ -19,7 +19,12 @@ jobs:
       runs-on: ubuntu-latest
 
       outputs:
-        DLRS_NAME: ${{ steps.set-outputs.outputs.DLRS_NAME }}
+        DLRS_NAME: ${{ steps.outputs.outputs.DLRS_NAME }}
+        DLRS_VERSION: ${{ steps.outputs.outputs.DLRS_VERSION }}
+        DLRS_REPOSITORY: ${{ steps.outputs.outputs.DLRS_REPOSITORY }}
+        DLRS_BRANCH: ${{ steps.outputs.outputs.DLRS_BRANCH }}
+        DLRS_TAG: ${{ steps.outputs.outputs.DLRS_TAG }}
+        DLRS_SUFFIX: ${{ steps.outputs.outputs.DLRS_SUFFIX }}
       
       steps:
         - name: Checkout
@@ -68,13 +73,19 @@ jobs:
             DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}            
 
         - name: Set ouptputs
-          id: set-outputs 
+          id: outputs 
           run: |
-            echo "::group::Set Outputs
-            for i in $(env | grep DLRS); do
-              echo $i
-            done
+            echo "::group::Set Outputs"
+            echo "DLRS_NAME=${{ github.event.repository.name }}" >> $GITHUB_OUTPUT
+            echo "DLRS_VERSION=$(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g' | awk -F'-' '{print $1}' | sed 's/[^0-9.]*//g')" >> $GITHUB_OUTPUT
+            echo "DLRS_REPOSITORY=${{ github.repository }}">> $GITHUB_OUTPUT
+            echo "DLRS_BRANCH=$(echo ${{ github.ref }} | awk -F'/' '{print $NF}')" >> $GITHUB_OUTPUT
+            echo "DLRS_TAG=$(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g')" >> $GITHUB_OUTPUT
+            echo "DLRS_SUFFIX=$( echo $(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g') | awk -F'-' '{print $2}')" >> $GITHUB_OUTPUT
             echo "::endgroup::"
+          env:
+            DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
+            DLRS_VERSION_FILE: ${{ format('{0}.json',github.event.repository.name) }}
   
   branch:
     name: Branch

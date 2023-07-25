@@ -71,12 +71,12 @@ jobs:
           id: outputs 
           run: |
             echo "::group::Set Outputs
-            echo "DLRS_NAME=${{ github.event.repository.name }}" >> $GITHUB_OUTPUT
-            echo "DLRS_VERSION=$(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g' | awk -F'-' '{print $1}' | sed 's/[^0-9.]*//g')" >> $GITHUB_OUTPUT
-            echo "DLRS_REPOSITORY=${{ github.repository }}" >> $GITHUB_OUTPUT
-            echo "DLRS_BRANCH=$(echo ${{ github.ref }} | awk -F'/' '{print $NF}')" >> $GITHUB_OUTPUT
-            echo "DLRS_TAG=$(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g')" >> $GITHUB_OUTPUT
-            echo "DLRS_SUFFIX=$( echo $(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g') | awk -F'-' '{print $2}')" >> $GITHUB_OUTPUT
+            echo "DLRS_NAME=${{ github.event.repository.name }}" >> "$GITHUB_OUTPUT"
+            echo "DLRS_VERSION=$(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g' | awk -F'-' '{print $1}' | sed 's/[^0-9.]*//g')" >> "$GITHUB_OUTPUT"
+            echo "DLRS_REPOSITORY=${{ github.repository }}">> "$GITHUB_OUTPUT"
+            echo "DLRS_BRANCH=$(echo ${{ github.ref }} | awk -F'/' '{print $NF}')" >> "$GITHUB_OUTPUT"
+            echo "DLRS_TAG=$(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g')" >> "$GITHUB_OUTPUT"
+            echo "DLRS_SUFFIX=$( echo $(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g') | awk -F'-' '{print $2}')" >> "$GITHUB_OUTPUT"
             echo "::endgroup::"
   
   branch:

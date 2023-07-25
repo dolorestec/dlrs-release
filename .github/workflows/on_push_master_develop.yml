@@ -125,6 +125,7 @@ jobs:
           echo "Create new branch ${{ env.DLRS_NEW_BRANCH }}"
           git checkout -b ${{ env.DLRS_NEW_BRANCH }} ${{ env.DLRS_BRANCH }}
           git branch -D ${{ env.DLRS_BRANCH }}
+          git push origin ${{ env.DLRS_NEW_BRANCH }} &> /dev/null
           gh pr create --title "[DLRS-CI] - Update version to ${{ env.DLRS_NEW_TAG }}" --body "Update version to ${{ env.DLRS_NEW_TAG }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DLRS_NEW_BRANCH }}
           gh pr merge ${{ env.DLRS_NEW_BRANCH }} --auto --admin --merge --author ${{ github.actor }}          
           echo "::endgroup::"

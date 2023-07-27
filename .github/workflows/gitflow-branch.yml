@@ -12,8 +12,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  variables:
+    name: Variables
+    uses: ./.github/workflows/variables@develop
+  
+  build-push:
+    name: Build and Push
+    needs: variables
+    uses: ./.github/workflows/build-push@develop
+
   branch:
     name: Create Branch
+    needs: build-push
     timeout-minutes: 3
     runs-on: ubuntu-latest
 

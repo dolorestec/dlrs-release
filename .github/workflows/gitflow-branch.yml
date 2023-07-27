@@ -173,25 +173,13 @@ jobs:
 
           echo "Push changes"
           git push --set-upstream origin ${{ env.DLRS_NEW_BRANCH }}
-          echo "::endgroup::"
-        env:
-          DLRS_NAME: ${{ env.DLRS_NAME }}
-          DLRS_BRANCH: ${{ env.DLRS_BRANCH }}
-          DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
-          DLRS_TAG: ${{ env.DLRS_TAG }}
-          DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
-          DLRS_VERSION_FILE: ${{ format('{0}.json',github.event.repository.name) }}
-          GITHUB_TOKEN: ${{ github.token }}
-      
-      - name: Create Pull Request
-        run: |
-          echo "::group::Create Pull Request"
-          echo "Login to GitHub"
-          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
 
           echo "Create pull request"
           gh pr create --title "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" --body "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DLRS_NEW_BRANCH }}
           gh pr merge --auto --admin --merge
+
+          echo "Logout from GitHub"
+          gh auth logout
           echo "::endgroup::"
         env:
           DLRS_NAME: ${{ env.DLRS_NAME }}

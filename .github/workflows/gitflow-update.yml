@@ -112,4 +112,4 @@ jobs:
           DLRS_TAG: ${{ env.DLRS_TAG }}
           DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
           DLRS_VERSION_FILE: ${{ format('{0}.json',github.event.repository.name) }}
-          GITHUB_TOKEN: ${{ github.token }}
+

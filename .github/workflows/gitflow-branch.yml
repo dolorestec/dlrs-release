@@ -159,6 +159,7 @@ jobs:
           echo "::group::Delete branch"
           echo "Create branch ${{ env.DLRS_NEW_BRANCH }}"
           echo "Login to GitHub"
+          gh auth logout
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
 
           echo "Create branch"
@@ -189,3 +190,16 @@ jobs:
           DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
           DLRS_VERSION_FILE: ${{ format('{0}.json',github.event.repository.name) }}
           GITHUB_TOKEN: ${{ github.token }}
+
+      - if: ${{ failure() }}
+        name: Delete Branch
+        run: |
+          echo "::group::Delete branch"
+          echo "Delete branch ${{ env.DLRS_NEW_BRANCH }}"
+          git checkout ${{ env.DLRS_BRANCH }}
+          git branch -D ${{ env.DLRS_NEW_BRANCH }}
+          git push origin --delete ${{ env.DLRS_NEW_BRANCH }} &> /dev/null
+          echo "::endgroup::"
+        env:
+          DLRS_BRANCH: ${{ env.DLRS_BRANCH }}
+          DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}

@@ -1,5 +1,5 @@
 name: update-version
-run-name: ${{ github.workflow.event.commits.message }}
+run-name: ${{ github.workflow.workflow.commits[0].message }}
 
 on:
   workflow_run:

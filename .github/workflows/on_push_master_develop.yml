@@ -121,7 +121,9 @@ jobs:
 
       - name: Create Branch
         run: |
+          echo "::group::Create branch"
           echo  "teste"
+          echo "::endgroup::"
         env:
           DLRS_NAME: ${{ needs.variables.outputs.DLRS_NAME }}
           DLRS_BRANCH: ${{ needs.variables.outputs.DLRS_BRANCH }}

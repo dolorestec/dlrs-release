@@ -160,7 +160,7 @@ jobs:
           echo "Create branch ${{ env.DLRS_NEW_BRANCH }}"
 
           echo "Create branch"
-          gh pr checkout -b ${{ env.DLRS_NEW_BRANCH }}
+          git checkout -b ${{ env.DLRS_NEW_BRANCH }}
 
           echo "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}"
           sed -i "s/${{ env.DLRS_TAG }}/${{ env.DLRS_NEW_TAG }}/g" ${{ env.DLRS_VERSION_FILE }}

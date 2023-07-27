@@ -156,8 +156,11 @@ jobs:
 
       - name: Create Branch
         run: |
-          echo "::group::Delete branch"
+          echo "::group::Create branch"
           echo "Create branch ${{ env.DLRS_NEW_BRANCH }}"
+
+          git config --global user.email "${{ github.actor }}jpa@gmail.com"
+          git config --global user.name ${{ github.actor }}
 
           echo "Create branch"
           git checkout -b ${{ env.DLRS_NEW_BRANCH }}

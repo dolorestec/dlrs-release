@@ -58,10 +58,10 @@ jobs:
 
   versioning:
     name: Versioning
+    needs: variables
     timeout-minutes: 3
     runs-on: ubuntu-latest
-    needs: variables
-
+    
     steps:
       - name: Checkout
         uses: Actions/checkout@v3
@@ -112,4 +112,3 @@ jobs:
           DLRS_TAG: ${{ env.DLRS_TAG }}
           DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
           DLRS_VERSION_FILE: ${{ format('{0}.json',github.event.repository.name) }}
-

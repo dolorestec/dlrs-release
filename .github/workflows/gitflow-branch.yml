@@ -65,6 +65,7 @@ jobs:
   
   build-push:
     name: Build and Push
+    needs: variables
     timeout-minutes: 3
     runs-on: ubuntu-latest
        

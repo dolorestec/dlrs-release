@@ -177,7 +177,7 @@ jobs:
 
           echo "Create pull request"
           gh pr create --title "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" --body "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DLRS_NEW_BRANCH }}
-          gh pr merge --auto --admin --merge
+          gh pr merge --auto --merge
 
           echo "::endgroup::"
         env:

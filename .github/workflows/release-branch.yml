@@ -1,4 +1,4 @@
-name: gitflow-branch
+name: release-branch
 run-name: ${{ github.event.commits.message }}
 
 on:

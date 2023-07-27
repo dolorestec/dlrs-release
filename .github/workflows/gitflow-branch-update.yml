@@ -1,9 +1,9 @@
-name: gitflow-branch-update
+name: update-version
 run-name: ${{ github.workflow.event.commits.message }}
 
 on:
   workflow_run:
-    workflows: ["gitflow-branch"]
+    workflows: ["release-branch"]
     branches:
       - develop
       - main

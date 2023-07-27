@@ -165,8 +165,8 @@ jobs:
           git checkout -b ${{ env.DLRS_NEW_BRANCH }}
           echo "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}"
           sed -i 's/${{env.DLRS_TAG}}/${{ env.DLRS_NEW_TAG }}/g' ${{ env.DLRS_VERSION_FILE }}
-          git add "${{ env.DLRS_NAME }}.json" &> /dev/null
-          git commit -m "[DLRS-CI] - Update version to ${{ env.DLRS_NEW_TAG }}" &> /dev/null
+          git add ${{ env.DLRS_VERSION_FILE }}
+          git commit -m "[DLRS-CI] - Update version to ${{ env.DLRS_NEW_TAG }}"
           git push origin ${{ env.DLRS_NEW_BRANCH }}
           echo "::endgroup::"
         env:

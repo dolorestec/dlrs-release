@@ -1,5 +1,5 @@
 name: update-version
-run-name: Update version 
+run-name: "Update version ${{github.ref_name}}" 
 
 on:
   workflow_run:

@@ -139,7 +139,7 @@ jobs:
       - name: Load variables
         uses: dolorestec/devops/.github/actions/environment/load@develop
         with:
-          env_file: ${{ env.DLRS_ENV_FILE }}
+          env_file: ${{ format('{0}-env.json',github.event.repository.name) }}
 
       - name: Versioning
         id: versioning

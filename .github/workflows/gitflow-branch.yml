@@ -124,6 +124,9 @@ jobs:
     needs: build-push
     timeout-minutes: 3
     runs-on: ubuntu-latest
+    environment: 
+      name: ${{ github.ref_name }}
+      url: https://github.com
 
     steps:
       - name: Checkout
@@ -174,10 +177,6 @@ jobs:
 
           echo "Push changes"
           git push --set-upstream origin ${{ env.DLRS_NEW_BRANCH }}
-
-          echo "Create pull request"
-          gh pr create --title "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" --body "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DLRS_NEW_BRANCH }}
-          gh pr merge --auto --merge
 
           echo "::endgroup::"
         env:

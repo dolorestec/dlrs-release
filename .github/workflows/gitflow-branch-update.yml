@@ -1,15 +1,17 @@
-name: gitflow-update
-run-name: Gitflow Update
+name: gitflow-branch-update
+run-name: Gitflow Branch Update
 
 on:
   workflow_run:
     workflows: ["gitflow-branch"]
+    branches:
+      - develop
+      - main
     types:
       - completed
 
 jobs:
   variables:
-    if: ${{ github.event.pull_request.merged == true }}
     name: Variables
     timeout-minutes: 3
     runs-on: ubuntu-latest

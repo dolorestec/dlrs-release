@@ -14,12 +14,12 @@ concurrency:
 jobs:
   variables:
     name: Variables
-    uses: ./.github/workflows/variables@develop
+    uses: dolorestec/dlrs-release/.github/workflows/variables@develop
   
   build-push:
     name: Build and Push
     needs: variables
-    uses: ./.github/workflows/build-push@develop
+    uses: dolorestec/dlrs-release/.github/workflows/build-push@develop
 
   branch:
     name: Create Branch

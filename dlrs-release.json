@@ -2,5 +2,5 @@
     "author": "Dolorestec, Inc.",
     "name": "dlrs-release",
     "description": "Image docker para apps em python",
-    "version": "0.0.0-RELEASE"
+    "version": "1.0.0-SNAPSHOT"
 }

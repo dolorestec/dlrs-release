@@ -1,5 +1,5 @@
 name: update-version
-run-name: ${{ github.repository.commits.message }}
+run-name: ${{ github. }}
 
 on:
   workflow_run:

@@ -185,7 +185,8 @@ jobs:
 
           echo "Merge branch ${{ env.DLRS_NEW_BRANCH }} to ${{ env.DLRS_BRANCH }}"
           git checkout ${{ env.DLRS_BRANCH }}
-          git merge --no-ff --commit -m "[DLRS-CI] Merge branch ${{ env.DLRS_NEW_BRANCH }} to ${{ env.DLRS_BRANCH }}" --strategy=ort ${{ env.DLRS_NEW_BRANCH }}
+          git pull origin ${{ env.DLRS_BRANCH }}
+          git merge --no-ff ${{ env.DLRS_NEW_BRANCH }} -m "[DLRS-CI] Merge branch ${{ env.DLRS_NEW_BRANCH }}}"
           git push origin ${{ env.DLRS_BRANCH }}
 
           echo "::endgroup::"

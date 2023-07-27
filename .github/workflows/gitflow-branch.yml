@@ -1,0 +1,95 @@
+name: gitflow-branch
+run-name: Gitflow Branch
+
+on:
+  push:
+    branches:
+      - master
+      - develop
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  branch:
+    name: Create Branch
+    timeout-minutes: 3
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: Actions/checkout@v3
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref_name}}
+          fetch-depth: 0
+
+      - name: Load variables
+        uses: dolorestec/devops/.github/actions/environment/load@develop
+        with:
+          env_file: ${{ format('{0}-env.json',github.event.repository.name) }}
+
+      - name: Versioning
+        id: versioning
+        uses: dolorestec/devops/.github/actions/versions@develop
+        with:
+          branch: ${{ env.DLRS_BRANCH }}
+          tag: ${{ env.DLRS_TAG }}
+          version: ${{ env.DLRS_VERSION }}
+          major: ${{ env.DLRS_MAJOR }}
+          minor: ${{ env.DLRS_MINOR }}
+        env:
+          DLRS_BRANCH: ${{ env.DLRS_BRANCH }}
+          DLRS_TAG: ${{ env.DLRS_TAG }}
+          DLRS_VERSION: ${{  env.DLRS_VERSION }}
+          DLRS_MAJOR: ${{ github.ref_name == 'develop' && 'true' || 'false' }}
+          DLRS_MINOR: ${{ github.ref_name == 'main' && 'true' || 'false' }}
+
+      - name: Create Branch
+        run: |
+          echo "::group::Delete branch"
+          echo "Create branch ${{ env.DLRS_NEW_BRANCH }}"
+          echo "Login to GitHub"
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+          echo "Create branch"
+          gh checkout -b ${{ env.DLRS_NEW_BRANCH }}
+
+          echo "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}"
+          sed -i "s/${{ env.DLRS_TAG }}/${{ env.DLRS_NEW_TAG }}/g" ${{ env.DLRS_VERSION_FILE }}
+
+          echo "Commit changes"
+          git add ${{ env.DLRS_VERSION_FILE }}
+          git commit -m "[DLRS-CI] Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}"
+
+          echo "Push changes"
+          git push --set-upstream origin ${{ env.DLRS_NEW_BRANCH }}
+          echo "::endgroup::"
+        env:
+          DLRS_NAME: ${{ env.DLRS_NAME }}
+          DLRS_BRANCH: ${{ env.DLRS_BRANCH }}
+          DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
+          DLRS_TAG: ${{ env.DLRS_TAG }}
+          DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
+          DLRS_VERSION_FILE: ${{ format('{0}.json',github.event.repository.name) }}
+          GITHUB_TOKEN: ${{ github.token }}
+      
+      - name: Create Pull Request
+        run: |
+          echo "::group::Create Pull Request"
+          echo "Login to GitHub"
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+          echo "Create pull request"
+          gh pr create --title "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" --body "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DLRS_NEW_BRANCH }}
+          gh pr merge --auto --admin --merge
+          echo "::endgroup::"
+        env:
+          DLRS_NAME: ${{ env.DLRS_NAME }}
+          DLRS_BRANCH: ${{ env.DLRS_BRANCH }}
+          DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
+          DLRS_TAG: ${{ env.DLRS_TAG }}
+          DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
+          DLRS_VERSION_FILE: ${{ format('{0}.json',github.event.repository.name) }}
+          GITHUB_TOKEN: ${{ github.token }}

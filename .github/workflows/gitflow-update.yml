@@ -1,21 +1,16 @@
-name: Publish branch
-run-name: Publish branch
+name: gitflow-update
+run-name: Gitflow Update
 
 on:
-  push:
-    branches:
-      - release/*
-      - hotfix/*
   pull_request:
-    types: [opened, synchronize, reopened, ready_for_review]
+    types: [closed]
     branches:
-      - release/*
-      - hotfix/*
-  workflow_call:
-  workflow_dispatch:
+      - develop
+      - master
 
-jobs:  
+jobs:
   variables:
+    if: ${{ github.event.pull_request.merged == true }}
     name: Variables
     timeout-minutes: 3
     runs-on: ubuntu-latest
@@ -61,54 +56,60 @@ jobs:
           name: ${{env.DLRS_ENV_FILE}}
           path: ${{env.DLRS_ENV_FILE}}
 
-  build:
-    name: Build
+  versioning:
+    name: Versioning
     timeout-minutes: 3
     runs-on: ubuntu-latest
     needs: variables
-    env:
-      DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
-    
+
     steps:
+      - name: Checkout
+        uses: Actions/checkout@v3
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref_name}}
+          fetch-depth: 0
+
       - name: Load variables
         uses: dolorestec/devops/.github/actions/environment/load@develop
         with:
-          env_file: ${{ env.DLRS_ENV_FILE }}
-      
-      - name: Create buildx builder
-        uses: dolorestec/devops/.github/actions/docker/buildx/create@develop
-        with:
-          name: ${{ env.DLRS_NAME }}
-        env:
-          DLRS_NAME: ${{ env.DLRS_NAME }}
+          env_file: ${{ format('{0}-env.json',github.event.repository.name) }}
 
-      - name: Login to ghcr.io
-        uses: dolorestec/devops/.github/actions/docker/registry/login@develop
+      - name: Versioning
+        id: versioning
+        uses: dolorestec/devops/.github/actions/versions@develop
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ env.USERNAME }}
-          token: ${{ env.TOKEN }}
-        env:
-          REGISTRY: ghcr.io
-          USERNAME: ${{ github.actor }}
-          TOKEN: ${{ github.token }}
-
-      - name: Build image
-        env:
-          DLRS_REPOSITORY: ${{ env.DLRS_REPOSITORY }}
-          DLRS_TAG: ${{ env.DLRS_TAG }}
-        uses: dolorestec/devops/.github/actions/docker/buildx/build@develop
-        with:
-          image: "ghcr.io/${{ env.DLRS_REPOSITORY }}"
+          branch: ${{ env.DLRS_BRANCH }}
           tag: ${{ env.DLRS_TAG }}
-          context: .
-          dockerfile: Dockerfile
-          push: false
-
-
-      - name: Logout from ghcr.io
+          version: ${{ env.DLRS_VERSION }}
+          major: ${{ env.DLRS_MAJOR }}
+          minor: ${{ env.DLRS_MINOR }}
         env:
-          REGISTRY: ghcr.io
-        uses: dolorestec/devops/.github/actions/docker/registry/logout@develop
-        with:
-          registry: ${{ env.REGISTRY }}
+          DLRS_BRANCH: ${{ env.DLRS_BRANCH }}
+          DLRS_TAG: ${{ env.DLRS_TAG }}
+          DLRS_VERSION: ${{  env.DLRS_VERSION }}
+          DLRS_MAJOR: ${{ github.ref_name == 'develop' && 'true' || 'false' }}
+          DLRS_MINOR: ${{ github.ref_name == 'main' && 'true' || 'false' }}
+
+      - name: Update version
+        run: |
+          echo "::group::Update version"
+          echo "Login to GitHub"
+          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+
+          echo "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}"
+          sed -i "s/${{ env.DLRS_TAG }}/${{ env.DLRS_NEW_TAG }}/g" ${{ env.DLRS_VERSION_FILE }}
+
+          echo "Commit changes"
+          git add ${{ env.DLRS_VERSION_FILE }}
+          git commit -m "[DLRS-CI] Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}"
+
+          echo "Push changes"
+          git push origin ${{ env.DLRS_BRANCH }}
+          echo "::endgroup::"
+        env:
+          DLRS_BRANCH: ${{ env.DLRS_BRANCH }}
+          DLRS_TAG: ${{ env.DLRS_TAG }}
+          DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
+          DLRS_VERSION_FILE: ${{ format('{0}.json',github.event.repository.name) }}
+          GITHUB_TOKEN: ${{ github.token }}

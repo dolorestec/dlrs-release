@@ -2,11 +2,8 @@ name: On Push [main, develop]
 run-name: On Push
 
 on:
-  push:
-    branches:
-      - develop
-      - main
   workflow_dispatch:
+  
 
 concurrency:
     group: ${{ github.ref }}
@@ -197,9 +194,10 @@ jobs:
       - name: Create Pull Request
         run: |
           echo "::group::Create Pull Request"
-          echo "Create Pull Request ${{ env.DLRS_NEW_BRANCH }} to ${{ env.DLRS_BRANCH }}"
+          echo "Create Pull Request ${{ env.DLRS_BRANCH }} to ${{ env.DLRS_NEW_BRANCH }}"
+          gh login --with-token ${{ github.token }}
           gh pr create --title "[DLRS-CI] - Update version to ${{ env.DLRS_NEW_TAG }}" --body "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DLRS_NEW_BRANCH }}
-          gh pr merge ${{ env.DLRS_NEW_BRANCH }} --auto --author ${{ github.actor }} --body "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" --disable-auto --merge
+          gh pr merge ${{ env.DLRS_NEW_BRANCH }} --admin --merge --auto
           echo "::endgroup::"
         env:
           DLRS_BRANCH: ${{ env.DLRS_BRANCH }}

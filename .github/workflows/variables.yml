@@ -1,0 +1,61 @@
+name: validate
+run-name: Validate
+
+on:
+  workflow_run:
+    workflows: ["build-push"]
+    branches: [main, develop]
+    types:
+      - requested
+
+jobs:
+    variables:
+        name: Variables
+        timeout-minutes: 3
+        runs-on: ubuntu-latest
+        
+        steps:
+          - name: Checkout
+            uses: Actions/checkout@v3
+            with:
+              repository: ${{ github.repository }}
+              ref: ${{ github.ref_name }}
+              fetch-depth: 0
+  
+          - name: Create file
+            run: |
+              echo "::group::Create file"
+              touch ${{env.DLRS_ENV_FILE}}
+              echo "::endgroup::"
+            env:
+              DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
+  
+          - name: Set variables
+            run: |
+              echo "::group::Environment Variables"
+              echo "DLRS_NAME=${{ github.event.repository.name }}" >> ${{env.DLRS_ENV_FILE}}
+              echo "DLRS_VERSION=$(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g' | awk -F'-' '{print $1}' | sed 's/[^0-9.]*//g')" >> ${{env.DLRS_ENV_FILE}}
+              echo "DLRS_REPOSITORY=${{ github.repository }}">> ${{env.DLRS_ENV_FILE}}
+              echo "DLRS_BRANCH=$(echo ${{ github.ref }} | awk -F'/' '{print $NF}')" >> ${{env.DLRS_ENV_FILE}}
+              echo "DLRS_TAG=$(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g')" >> ${{env.DLRS_ENV_FILE}}
+              echo "DLRS_SUFFIX=$( echo $(cat ${{env.DLRS_VERSION_FILE}} | grep version | awk -F':' '{print $2}' | sed 's/ \|"\|//g') | awk -F'-' '{print $2}')" >> ${{env.DLRS_ENV_FILE}}
+              echo "::endgroup::"
+            env:
+              DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
+              DLRS_VERSION_FILE: ${{ format('{0}.json',github.event.repository.name) }}
+  
+          - name: List variables
+            run: |
+              echo "::group::Create file"
+              cat ${{env.DLRS_ENV_FILE}}
+              echo "::endgroup::"
+            env:
+              DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}
+    
+          - name: Upload file
+            uses: actions/upload-artifact@v3
+            with:
+              name: ${{env.DLRS_ENV_FILE}}
+              path: ${{env.DLRS_ENV_FILE}}
+            env:
+              DLRS_ENV_FILE: ${{ format('{0}-env.json',github.event.repository.name) }}

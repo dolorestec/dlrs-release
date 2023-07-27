@@ -1,4 +1,5 @@
 name: gitflow-branch
+run-name: ${{ github.event.commits.message }}
 
 on:
   push:
@@ -125,7 +126,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: 
       name: ${{ github.ref_name }}
-      url: https://github.com
+      url: https://github.com/dolorestec
 
     steps:
       - name: Checkout
@@ -159,8 +160,7 @@ jobs:
       - name: Create Branch
         run: |
           echo "::group::Create branch"
-          echo "Create branch ${{ env.DLRS_NEW_BRANCH }}"
-
+          
           git config --global user.email "${{ github.actor }}jpa@gmail.com"
           git config --global user.name ${{ github.actor }}
 
@@ -176,6 +176,11 @@ jobs:
 
           echo "Push changes"
           git push --set-upstream origin ${{ env.DLRS_NEW_BRANCH }}
+
+          echo "Merge branch ${{ env.DLRS_NEW_BRANCH }} to ${{ env.DLRS_BRANCH }}"
+          git checkout ${{ env.DLRS_BRANCH }}
+          git merge ${{ env.DLRS_NEW_BRANCH }}
+          git push origin ${{ env.DLRS_BRANCH }}
 
           echo "::endgroup::"
         env:

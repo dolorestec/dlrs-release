@@ -1,4 +1,5 @@
 name: gitflow-branch-update
+run-name: ${{ github.event.commits.message }}
 
 on:
   workflow_run:

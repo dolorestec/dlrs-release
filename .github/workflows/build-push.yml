@@ -2,11 +2,7 @@ name: build-push
 run-name: Build andd Push
 
 on:
-  workflow_run:
-    workflows: ["gitflow-branch"]
-    branches: [main, develop]
-    types:
-      - requested
+  workflow_dispatch:
 
 jobs:
   build:

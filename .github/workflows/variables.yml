@@ -2,11 +2,7 @@ name: validate
 run-name: Validate
 
 on:
-  workflow_run:
-    workflows: ["build-push"]
-    branches: [main, develop]
-    types:
-      - requested
+  workflow_dispatch:
 
 jobs:
     variables:

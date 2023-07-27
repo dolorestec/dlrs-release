@@ -158,25 +158,3 @@ jobs:
           DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}
           DLRS_NEW_VERSION: ${{ steps.versioning.outputs.version }}
           GH_TOKEN: ${{ github.token }}  
-
-      - name: Checkout
-        uses: Actions/checkout@v3
-        with:
-          repository: ${{ github.repository }}
-          ref: ${{ env.DLRS_NEW_BRANCH }}
-          fetch-depth: 0
-        env:
-          DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
-
-      - name: Versioning file
-        run: |
-          echo "::group::Pull Request"
-          echo "Update version to ${{ env.DLRS_NEW_TAG }}"
-          
-          git push origin ${{ env.DLRS_NEW_BRANCH }} &> /dev/null
-          echo "::endgroup::"
-        env:
-          DLRS_NAME: ${{ needs.variables.outputs.DLRS_NAME }}
-          DLRS_NEW_BRANCH: ${{ steps.versioning.outputs.branch }}
-          DLRS_TAG: ${{ needs.variables.outputs.DLRS_TAG }} 
-          DLRS_NEW_TAG: ${{ steps.versioning.outputs.tag }}

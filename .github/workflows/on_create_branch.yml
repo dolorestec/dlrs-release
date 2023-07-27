@@ -2,10 +2,16 @@ name: Publish branch
 run-name: Publish branch
 
 on:
-  pull_request:
+  push:
     branches:
       - release/*
       - hotfix/*
+  pull_request:
+    types: [opened]
+    branches:
+      - release/*
+      - hotfix/*
+  workflow_call:
   workflow_dispatch:
 
 jobs:  
@@ -97,7 +103,7 @@ jobs:
           tag: ${{ env.DLRS_TAG }}
           context: .
           dockerfile: Dockerfile
-          push: true
+          push: false
 
 
       - name: Logout from ghcr.io

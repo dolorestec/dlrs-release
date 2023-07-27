@@ -1,5 +1,4 @@
 name: gitflow-branch-update
-run-name: Gitflow Branch Update
 
 on:
   workflow_run:
@@ -95,8 +94,9 @@ jobs:
       - name: Update version
         run: |
           echo "::group::Update version"
-          echo "Login to GitHub"
-          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
+          
+          git config --global user.email "${{ github.actor }}jpa@gmail.com"
+          git config --global user.name ${{ github.actor }}
 
           echo "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}"
           sed -i "s/${{ env.DLRS_TAG }}/${{ env.DLRS_NEW_TAG }}/g" ${{ env.DLRS_VERSION_FILE }}

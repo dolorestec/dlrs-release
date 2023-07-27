@@ -1,5 +1,4 @@
 name: gitflow-branch
-run-name: Gitflow Branch
 
 on:
   push:

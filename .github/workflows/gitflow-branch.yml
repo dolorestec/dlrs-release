@@ -158,8 +158,6 @@ jobs:
         run: |
           echo "::group::Delete branch"
           echo "Create branch ${{ env.DLRS_NEW_BRANCH }}"
-          echo "Login to GitHub"
-          gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
 
           echo "Create branch"
           gh checkout -b ${{ env.DLRS_NEW_BRANCH }}
@@ -177,9 +175,6 @@ jobs:
           echo "Create pull request"
           gh pr create --title "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" --body "Update version ${{ env.DLRS_TAG}} to ${{ env.DLRS_NEW_TAG }}" --base ${{ env.DLRS_BRANCH }} --head ${{ env.DLRS_NEW_BRANCH }}
           gh pr merge --auto --admin --merge
-
-          echo "Logout from GitHub"
-          gh auth logout
           echo "::endgroup::"
         env:
           DLRS_NAME: ${{ env.DLRS_NAME }}

@@ -2,11 +2,10 @@ name: gitflow-update
 run-name: Gitflow Update
 
 on:
-  pull_request:
-    types: [closed]
-    branches:
-      - develop
-      - master
+  workflow_run:
+    workflows: ["gitflow-branch"]
+    types:
+      - completed
 
 jobs:
   variables:

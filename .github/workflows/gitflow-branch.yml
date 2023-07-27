@@ -159,7 +159,6 @@ jobs:
           echo "::group::Delete branch"
           echo "Create branch ${{ env.DLRS_NEW_BRANCH }}"
           echo "Login to GitHub"
-          gh auth logout
           gh auth login --with-token <<< "${{ secrets.GITHUB_TOKEN }}"
 
           echo "Create branch"

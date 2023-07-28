@@ -1,4 +1,4 @@
-name: build-push
+name: build-and-push
 run-name: ${{ github.event.commits.message }}
 
 on:
@@ -6,7 +6,9 @@ on:
     branches:
       - main
       - develop
+
   workflow_dispatch:
+    
   
 concurrency:
   group: ${{ github.ref }}
